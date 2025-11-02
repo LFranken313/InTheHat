@@ -2,7 +2,6 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useFonts} from 'expo-font';
-import AppLoading from 'expo-app-loading';
 
 import StartScreen from './src/screens/StartScreen';
 import SetupScreen from './src/screens/SetupScreen';
@@ -20,10 +19,6 @@ export default function App() {
         'pixel-bold': require('./assets/fonts/PixelifySans-Bold.ttf'),
         'pixel-regular': require('./assets/fonts/PixelifySans-Regular.ttf'),
     });
-
-    if (!fontsLoaded) {
-        return <AppLoading/>;
-    }
 
     return (
         <NavigationContainer>
