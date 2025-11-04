@@ -5,8 +5,10 @@ import styled from 'styled-components/native';
 import {GameStateService} from '../logic/GameStateService';
 import {WordService} from '../logic/WordService';
 import {GameService} from '../logic/GameService';
+import { TouchableOpacity } from 'react-native';
 import StyledText from '../components/StyledText';
 import ScreenContainer from '../components/ScreenContainer';
+
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -161,6 +163,7 @@ const GameScreen = () => {
     const [currentWord, setCurrentWord] = useState<string>('');
     const [streak, setStreak] = useState<number>(0);
     const [isTimeUp, setIsTimeUp] = useState(false);
+    const [lastGuessedWord, setLastGuessedWord] = useState<string | null>(null);
     const [showExitModal, setShowExitModal] = useState(false);
     const [paused, setPaused] = useState(false);
     const [carryOver, setCarryOver] = useState<{ player: string, time: number } | null>(null);
@@ -238,6 +241,7 @@ const GameScreen = () => {
 
     const handleGuessed = async () => {
         if (isTimeUp || paused) return;
+        setLastGuessedWord(currentWord); // Track last guessed word
         const loadedGame = await gameService.continueGame();
         const isLastWord = loadedGame.wordsLeftInTheHat.length === 1;
         await gameService.wordGuessed(
@@ -299,6 +303,26 @@ const GameScreen = () => {
                 ? " "
                 : currentWord.toUpperCase();
 
+
+
+    const undoLastGuess = async () => {
+        if (!lastGuessedWord || !gameRef.current) return;
+        // Add the word back to the hat
+        const wordObj = gameRef.current.words.find(w => w.name === lastGuessedWord);
+        if (wordObj) {
+            gameRef.current.wordsLeftInTheHat.push(wordObj);
+            // Optionally, remove the word from the team's correct guesses
+            gameRef.current.teams.forEach(team => {
+                team.guessedWords = team.guessedWords.filter(w => w.name !== lastGuessedWord);
+            });
+            await gameStateService.saveGameState(gameRef.current);
+            setCurrentWord(lastGuessedWord);
+            setStreak(prev => (prev > 0 ? prev - 1 : 0));
+            setPaused(false);
+            setLastGuessedWord(null);
+        }
+    };
+
     return (
         <ScreenContainer
             showPrimaryButton
@@ -311,6 +335,22 @@ const GameScreen = () => {
             </ExitButton>
 
             <Timer>{timer}s</Timer>
+
+            <TouchableOpacity
+                onPress={undoLastGuess}
+                disabled={!lastGuessedWord || showExitModal || paused}
+                style={{
+                    backgroundColor: '#6fb8e6',
+                    padding: 12,
+                    top: 30,
+                    borderRadius: 8,
+                    marginBottom: 12,
+                    alignSelf: 'center',
+                    opacity: !lastGuessedWord || showExitModal || paused ? 0.5 : 1,
+                }}
+            >
+                <StyledText style={{ color: '#fff', fontSize: 18 }}>Undo</StyledText>
+            </TouchableOpacity>
 
             <Container>
                 <CardImageContainer>
