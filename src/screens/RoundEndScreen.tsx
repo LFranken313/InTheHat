@@ -60,9 +60,13 @@ const whiteShadowStyle = {
   `;
 
 const TeamsScroll = styled(ScrollView)`
-    top: 10%;
-    max-height: 70%;
+    max-height: 400px;
     width: 100%;
+    border-width: 2px;
+    border-color: #f7c873;
+    background: #fffbe6;
+    padding-vertical: 8px;
+    margin-top: 5%;
 `;
 
   const RoundEndScreen = () => {

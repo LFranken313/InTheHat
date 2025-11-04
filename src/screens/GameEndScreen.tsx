@@ -87,7 +87,6 @@ const GameEndScreen = () => {
             const game = await gameService.continueGame();
             setTeams(game.teams.map((t: any) => ({name: t.name, score: t.score})));
             setGame(game);
-            // Fix: use the first array inside winningMessages
             const messages = winningMessage.winningMessages[0];
             const idx = Math.floor(Math.random() * messages.length);
             setMessage(messages[idx]);

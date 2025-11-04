@@ -1,7 +1,7 @@
-// src/components/ScreenContainer.tsx
-import React, { ReactNode } from 'react';
+import React, {ReactNode} from 'react';
 import styled from 'styled-components/native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {Dimensions, View} from 'react-native';
 import BigHeader from './BigHeader';
 import PrimaryButton from './PrimaryButton';
 
@@ -10,10 +10,10 @@ const Outer = styled(SafeAreaView)`
     flex: 1;
 `;
 
-const Content = styled.View`
-    flex: 1;
+const Content = styled.View<{ height: number }>`
     width: 92%;
     align-self: center;
+    height: ${({height}) => height}px;
 `;
 
 type ScreenContainerProps = {
@@ -26,6 +26,9 @@ type ScreenContainerProps = {
     primaryButtonDisabled?: boolean;
 };
 
+const HEADER_HEIGHT = 80;
+const BUTTON_HEIGHT = 64;
+
 const ScreenContainer = ({
                              headerText = null,
                              headerLines = 1,
@@ -36,10 +39,16 @@ const ScreenContainer = ({
                              primaryButtonDisabled = false,
                          }: ScreenContainerProps) => {
     const insets = useSafeAreaInsets();
+    const windowHeight = Dimensions.get('window').height;
+    const contentHeight =
+        windowHeight -
+        (headerText ? HEADER_HEIGHT : 0) -
+        (showPrimaryButton ? BUTTON_HEIGHT + insets.bottom + 24 : 0);
+
     return (
         <Outer edges={['bottom']}>
             {headerText && <BigHeader numberOfLines={headerLines}>{headerText}</BigHeader>}
-            <Content>
+            <Content height={contentHeight}>
                 {children}
             </Content>
             {showPrimaryButton && primaryButtonText && (

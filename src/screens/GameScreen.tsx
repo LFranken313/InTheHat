@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {Modal, TouchableOpacity} from 'react-native';
+import {Modal, Image} from 'react-native';
+import styled from 'styled-components/native';
 import {GameStateService} from '../logic/GameStateService';
 import {WordService} from '../logic/WordService';
 import {GameService} from '../logic/GameService';
-import styled from 'styled-components/native';
 import StyledText from '../components/StyledText';
 import ScreenContainer from '../components/ScreenContainer';
 
@@ -45,24 +45,38 @@ const Timer = styled(StyledText)`
     z-index: 10;
 `;
 
-const Card = styled.View`
-    background: #fffbe6;
-    margin: 0 32px;
-    border-radius: 16px;
-    padding: 48px 24px;
+const CardImageContainer = styled.View`
+    position: relative;
+    width: 100%;
+    height: 320px;
     align-items: center;
     justify-content: center;
-    elevation: 5;
-    shadow-color: #000;
-    shadow-opacity: 0.08;
-    shadow-radius: 8px;
-    shadow-offset: 0px 4px;
+    margin-horizontal: 0;
 `;
 
-const WordText = styled(StyledText)`
-    font-size: 36px;
-    color: #7c4a03;
+const CardImage = styled(Image)`
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+`;
+
+const CardTextOverlay = styled.View`
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    align-items: center;
+    justify-content: center;
+`;
+
+const WordText = styled(StyledText)<{ fontSize: number }>`
+    max-width: 90%;
+    padding-horizontal: 12px;
     text-align: center;
+    overflow: hidden;
+    font-size: ${({fontSize}) => fontSize}px;
+    color: #7c4a03;
     letter-spacing: 2px;
 `;
 
@@ -130,6 +144,15 @@ const ModalButton = styled.TouchableOpacity`
 const ModalButtonText = styled(StyledText)`
     color: #fff;
     font-size: 18px;
+`;
+
+const FullscreenOverlay = styled.TouchableOpacity`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
 `;
 
 const GameScreen = () => {
@@ -260,20 +283,21 @@ const GameScreen = () => {
         }
     };
 
-    const FullscreenOverlay = ({onPress}: { onPress: () => void }) => (
-        <TouchableOpacity
-            style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 100,
-            }}
-            activeOpacity={1}
-            onPress={onPress}
-        />
-    );
+    const getWordFontSize = (word: string) => {
+        if (!word) return 36;
+        const len = word.length;
+        if (len <= 12) return 36;
+        if (len <= 20) return 28;
+        return 22;
+    };
+
+    const wordDisplay = isTimeUp
+        ? "Time's up!"
+        : roundEnded
+            ? "Round has ended!"
+            : showExitModal
+                ? " "
+                : currentWord.toUpperCase();
 
     return (
         <ScreenContainer
@@ -289,38 +313,37 @@ const GameScreen = () => {
             <Timer>{timer}s</Timer>
 
             <Container>
-                <Card>
-                    <WordText>
-                        {isTimeUp
-                            ? "Time's up!"
-                            : roundEnded
-                                ? "Round has ended!"
-                                : showExitModal
-                                    ? " "
-                                    : currentWord.toUpperCase()}
-                    </WordText>
-                </Card>
+                <CardImageContainer>
+                    <CardImage
+                        source={require('../../assets/images/WordCard.png')}
+                        resizeMode="cover"
+                    />
+                    <CardTextOverlay>
+                        <WordText fontSize={getWordFontSize(wordDisplay)}>
+                            {wordDisplay}
+                        </WordText>
+                    </CardTextOverlay>
+                </CardImageContainer>
 
                 <CurrentStreak>Streak: {streak}</CurrentStreak>
                 <CardsLeftText>
-                    {gameRef.current?.wordsLeftInTheHat?.length ?? 0} / {gameRef.current?.words?.length ?? 0} cards left in the hat
+                    {gameRef.current?.wordsLeftInTheHat?.length ?? 0} / {gameRef.current?.words?.length ?? 0} cards left
+                    in the hat
                 </CardsLeftText>
 
                 {(isTimeUp || roundEnded) && (
                     <HintText>Touch anywhere to continue</HintText>
                 )}
             </Container>
-
             {isTimeUp && !showExitModal && (
-                <FullscreenOverlay onPress={onTimeUpPress}/>
+                <FullscreenOverlay activeOpacity={1} onPress={onTimeUpPress}/>
             )}
-
             {roundEnded && !showExitModal && (
                 <FullscreenOverlay
+                    activeOpacity={1}
                     onPress={() => navigation.navigate('RoundEndScreen')}
                 />
             )}
-
             <Modal
                 visible={showExitModal}
                 transparent
@@ -336,7 +359,7 @@ const GameScreen = () => {
                             <ModalButtonText>Exit Game</ModalButtonText>
                         </ModalButton>
                         <ModalButton
-                            style={[{ marginTop: 16, backgroundColor: '#6fb8e6' }, buttonShadow]}
+                            style={[{marginTop: 16, backgroundColor: '#6fb8e6'}, buttonShadow]}
                             onPress={() => setShowExitModal(false)}
                         >
                             <ModalButtonText>Cancel</ModalButtonText>
@@ -346,7 +369,6 @@ const GameScreen = () => {
             </Modal>
         </ScreenContainer>
     );
-
 };
 
 export default GameScreen;

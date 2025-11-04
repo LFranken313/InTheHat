@@ -44,21 +44,19 @@ const CategoryCard = styled.TouchableOpacity<{ selected: boolean }>`
     border-color: #f7c873;
     align-items: center;
     shadow-color: #000;
-    shadow-opacity: 0.08;
-    shadow-radius: 4px;
-    shadow-offset: 0px 2px;
+    shadow-opacity: 0.15;
+    shadow-radius: 8px;
+    shadow-offset: 0px 4px;
+    elevation: 4;
     min-width: 0;
 `;
+
 
 const CategoryText = styled(StyledText)<{ selected: boolean }>`
     font-size: 18px;
     color: ${props => (props.selected ? '#fff' : '#7c4a03')};
 `;
 
-const SubmitText = styled(StyledText)`
-    color: #fff;
-    font-size: 22px;
-`;
 
 const QuickGameScreen = () => {
     const route = useRoute();

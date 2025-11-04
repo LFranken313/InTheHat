@@ -7,7 +7,7 @@ import React, { ReactNode } from 'react';
     const SCREEN_HEIGHT = Dimensions.get('window').height;
     const CONTAINER_WIDTH = SCREEN_WIDTH * 0.9;
     const BASE_FONT_SIZE = Math.min(SCREEN_WIDTH * 0.10, 82);
-    const HEADER_MARGIN_TOP = Math.max(SCREEN_HEIGHT * 0.02, 32);
+    const HEADER_MARGIN_TOP = Math.max(SCREEN_HEIGHT * 0.02, 40);
 
     const HeaderContainer = styled.View`
         width: ${CONTAINER_WIDTH}px;

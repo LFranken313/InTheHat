@@ -2,6 +2,7 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useFonts} from 'expo-font';
+import { ActivityIndicator, View } from 'react-native';
 
 import StartScreen from './src/screens/StartScreen';
 import SetupScreen from './src/screens/SetupScreen';
@@ -12,6 +13,8 @@ import PlayerTurnScreen from "./src/screens/PlayerTurnScreen";
 import RoundEndScreen from "./src/screens/RoundEndScreen";
 import GameEndScreen from "./src/screens/GameEndScreen";
 import SubmitWordsScreen from "./src/screens/SubmitWordsScreen";
+import TeamOverviewScreen from "./src/screens/TeamOverviewScreen";
+
 
 const Stack = createStackNavigator();
 export default function App() {
@@ -19,6 +22,16 @@ export default function App() {
         'pixel-bold': require('./assets/fonts/PixelifySans-Bold.ttf'),
         'pixel-regular': require('./assets/fonts/PixelifySans-Regular.ttf'),
     });
+
+    if (!fontsLoaded) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#7c4a03" />
+            </View>
+        );
+    }
+
+
 
     return (
         <NavigationContainer>
@@ -32,6 +45,7 @@ export default function App() {
                 <Stack.Screen name="RoundEndScreen" component={RoundEndScreen} />
                 <Stack.Screen name="GameEndScreen" component={GameEndScreen} />
                 <Stack.Screen name="SubmitWordsScreen" component={SubmitWordsScreen} />
+                <Stack.Screen name="TeamOverviewScreen" component={TeamOverviewScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

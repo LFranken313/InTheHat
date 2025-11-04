@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {Modal, View, TouchableOpacity} from 'react-native';
+import {Modal, Image, View, TouchableOpacity} from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import styled from 'styled-components/native';
+import GameRulesModal from "../components/GameRulesModal";
+import SetupGrid from "../components/SetupGrid";
 
 const ModalContent = styled.View`
     background: #fffbe6;
@@ -23,7 +25,7 @@ const ModalText = styled(StyledText)`
 
 const buttonShadow = {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 4,
@@ -45,37 +47,6 @@ const ContentWrapper = styled.View`
     flex: 1;
     justify-content: center;
     align-items: center;
-`;
-
-const Grid = styled.View`
-    margin-bottom: 32px;
-    align-items: center;
-`;
-
-const GridCell = styled.View`
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 24px;
-`;
-
-const GridLabel = styled(StyledText)`
-    font-size: 32px;
-    color: #7c4a03;
-    width: 120px;
-    text-align: right;
-    margin-right: 12px;
-`;
-
-const GridInput = styled.TextInput`
-    height: 48px;
-    width: 80px;
-    padding: 8px 12px;
-    background: #fff;
-    font-size: 20px;
-    text-align: center;
-    border-width: 2px;
-    border-color: #f7c873;
 `;
 
 const ButtonRow = styled.View`
@@ -104,9 +75,34 @@ const ButtonText = styled(StyledText)`
     letter-spacing: 1px;
 `;
 
+const InfoButtonContainer = styled.View`
+    align-items: center;
+    margin-bottom: 24px;
+    width: 100%;
+`;
+
+const InfoButton = styled.TouchableOpacity`
+    background: #fffbe6;
+    padding: 8px 18px;
+    border-width: 1px;
+    border-color: #f7c873;
+    shadow-color: #000;
+    shadow-opacity: 0.15;
+    shadow-radius: 8px;
+    shadow-offset: 0px 4px;
+    elevation: 4;
+`;
+
+const InfoButtonText = styled(StyledText)`
+    color: #7c4a03;
+    font-size: 16px;
+    font-weight: 600;
+`;
+
 const WarningModal = styled(Modal)``;
 
 const SetupScreen = () => {
+    const [showInfo, setShowInfo] = useState(false);
     const [players, setPlayers] = useState<number>(4);
     const [teams, setTeams] = useState<number>(2);
     const [words, setWords] = useState<number>(20);
@@ -155,60 +151,29 @@ const SetupScreen = () => {
     return (
         <ScreenContainer headerText="SETUP">
             <ContentWrapper>
-                <Grid>
-                    <GridCell>
-                        <GridLabel>Players</GridLabel>
-                        <GridInput
-                            keyboardType="numeric"
-                            value={String(players)}
-                            onChangeText={handleInput(setPlayers)}
-                            placeholder="0"
-                            onFocus={() => {
-                                setPlayers('');
-                            }}
-                            maxLength={2}
-                        />
-                    </GridCell>
-                    <GridCell>
-                        <GridLabel>Teams</GridLabel>
-                        <GridInput
-                            keyboardType="numeric"
-                            value={String(teams)}
-                            onChangeText={handleInput(setTeams)}
-                            placeholder="0"
-                            onFocus={() => {
-                                setTeams('');
-                            }}
-                            maxLength={2}
-                        />
-                    </GridCell>
-                    <GridCell>
-                        <GridLabel>Words</GridLabel>
-                        <GridInput
-                            keyboardType="numeric"
-                            value={String(words)}
-                            onChangeText={handleInput(setWords)}
-                            maxLength={2}
-                        />
-                    </GridCell>
-                    <GridCell>
-                        <GridLabel>Rounds</GridLabel>
-                        <GridInput
-                            keyboardType="numeric"
-                            value={String(rounds)}
-                            onChangeText={handleInput(setRounds)}
-                            placeholder="3"
-                            maxLength={2}
-                        />
-                    </GridCell>
-                </Grid>
+                <SetupGrid
+                    players={players}
+                    teams={teams}
+                    words={words}
+                    rounds={rounds}
+                    handleInput={handleInput}
+                    setPlayers={setPlayers}
+                    setTeams={setTeams}
+                    setWords={setWords}
+                    setRounds={setRounds}
+                />
+                <InfoButtonContainer>
+                    <InfoButton onPress={() => setShowInfo(true)}>
+                        <InfoButtonText>New? Read the rules.</InfoButtonText>
+                    </InfoButton>
+                </InfoButtonContainer>
             </ContentWrapper>
             <ButtonRow>
                 <Button
                     bg="#6fb8e6"
                     onPress={() => handleButtonPress('quick')}
                     disabled={!isFormValid()}
-                    style={[{ opacity: !isFormValid() ? 0.5 : 1 }, buttonShadow]}
+                    style={[{opacity: !isFormValid() ? 0.5 : 1}, buttonShadow]}
                 >
                     <ButtonText>Quick game</ButtonText>
                 </Button>
@@ -216,18 +181,16 @@ const SetupScreen = () => {
                     bg="#43d9be"
                     onPress={() => handleButtonPress('custom')}
                     disabled={!isFormValid()}
-                    style={[{ opacity: !isFormValid() ? 0.5 : 1 }, buttonShadow]}
+                    style={[{opacity: !isFormValid() ? 0.5 : 1}, buttonShadow]}
                 >
                     <ButtonText>Custom game</ButtonText>
                 </Button>
-
             </ButtonRow>
             <WarningModal
                 transparent
                 visible={showWarning}
                 animationType="fade"
-                onRequestClose={() => setShowWarning(false)}
-            >
+                onRequestClose={() => setShowWarning(false)}>
                 <ModalContent>
                     <ModalText>
                         Warning: At least one team will have only 1 player. Consider adjusting the numbers for balanced
@@ -238,7 +201,7 @@ const SetupScreen = () => {
                     </CloseButton>
                 </ModalContent>
             </WarningModal>
-
+            <GameRulesModal visible={showInfo} onClose={() => setShowInfo(false)}/>
         </ScreenContainer>
     );
 };

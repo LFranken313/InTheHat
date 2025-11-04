@@ -1,0 +1,12 @@
+{
+  "rules": "In the Hat is played in 3 rounds of fast-paced guessing fun!",
+  "introduction": "Players toss words or phrases into a hat and take turns drawing words. Each player gets 30 seconds to describe or act out the words on the screen. Each word scores 1 point when guessed correctly. The team with the most points at the end wins!",
+  "round1Title": "Round 1: ",
+  "round1Content": "Say anything *except* the word itself. No cheating!",
+  "round2Title": "Round 2: ",
+  "round2Content": "Act it out! No talking—just gestures.",
+  "round3Title": "Round 3: ",
+  "round3Content": "One word only! Make it count.",
+  "challengeTitle": "Feeling bold?",
+  "challengeContent": "Try these twists:\n- Round 1: No capital-letter words (bye-bye 'I', names, countries).\n- Round 2: No pointing! Be the thing, not its use. Got 'Lamp'? You're glowing now.\n- Round 3: One sound only. If you say 'uhm'—that’s it. Good luck, team!"
+}

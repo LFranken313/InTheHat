@@ -5,13 +5,7 @@ import {GameStateService} from '../logic/GameStateService';
 import {useNavigation} from '@react-navigation/native';
 import StyledBold from '../components/StyledBold';
 import StyledText from '../components/StyledText';
-import {GameService} from "../logic/GameService";
-import {WordService} from "../logic/WordService";
-
-const gameStateService = new GameStateService();
-const wordService = new WordService();
-const gameService = new GameService(gameStateService, wordService);
-
+import {useWindowDimensions, Image, TouchableOpacity} from 'react-native';
 
 const Background = styled(LinearGradient).attrs({
     colors: ['#f5e9da', '#e9dbc7'],
@@ -23,59 +17,36 @@ const Background = styled(LinearGradient).attrs({
     align-items: center;
 `;
 
-const BannerText = styled(StyledBold)`
-    font-size: 60px;
-    color: #77dd77;
-    letter-spacing: 2px;
-    margin-top: 64px;
-    text-align: center;
-    text-shadow-color: #2e7d32;
-    text-shadow-offset: 2px 2px;
-    text-shadow-radius: 4px;
-`;
-
-// Add above the StartScreen component
-const buttonShadow = {
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
-};
-
-const StartButton = styled.TouchableOpacity`
-    background-color: #f7c873;
-    padding: 18px 48px;
-    border-color: #fff;
-    border-width: 2px;
-    shadow-color: #000;
-    shadow-opacity: 0.08;
-    shadow-radius: 6px;
-    margin-top: 16px;
-`;
-
-const StartButtonText = styled(StyledText)`
-    font-size: 22px;
-    color: #7c4a03;
-    font-weight: 600;
-    letter-spacing: 1px;
-`;
-
 const Content = styled.View`
     flex: 1;
     width: 100%;
-    align-items: center;
-    justify-content: flex-start;
 `;
 
-const LogoImage = styled.Image`
-    width: 50%;
-    height: 50%;
+const BannerContainer = styled.View`
+    align-items: center;
+    margin-top: 8%;
+`;
+
+const ImageContainer = styled.View`
+    justify-content: flex-start;
+    align-items: center;
+`;
+
+const ButtonContainer = styled.View`
+    width: 100%;
+    align-items: center;
+    margin-top: auto;
 `;
 
 const StartScreen = () => {
     const [hasSavedGame, setHasSavedGame] = useState(false);
     const navigation = useNavigation();
+    const {width, height} = useWindowDimensions();
+
+    const bannerFontSize = Math.max(32, width * 0.2);
+    const buttonFontSize = Math.max(16, width * 0.05);
+    const buttonWidth = Math.min(width * 0.8, 400);
+    const imageSize = Math.min(width * 0.5, height * 0.3);
 
     useEffect(() => {
         const checkSavedGame = async () => {
@@ -86,28 +57,103 @@ const StartScreen = () => {
         checkSavedGame();
     }, []);
 
+    const buttonShadow = {
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 4,
+    };
+
     return (
         <Background>
             <Content>
-                <BannerText>In the hat!</BannerText>
-                <LogoImage
-                    source={require('../../assets/images/tophat.png')}
-                    resizeMode="contain"
-                />
-                <StartButton
-                    onPress={() => navigation.navigate('Setup')}
-                    style={buttonShadow}
-                >
-                    <StartButtonText>Start game</StartButtonText>
-                </StartButton>
-                {hasSavedGame && (
-                    <StartButton
-                        onPress={() => navigation.navigate('PlayerTurnScreen')}
-                        style={buttonShadow}
+                <BannerContainer>
+                    <StyledBold
+                        style={{
+                            fontSize: bannerFontSize,
+                            color: '#77dd77',
+                            letterSpacing: 2,
+                            textAlign: 'center',
+                            textShadowColor: '#2e7d32',
+                            textShadowOffset: {width: 2, height: 2},
+                            textShadowRadius: 4,
+                        }}
                     >
-                        <StartButtonText>Load last game</StartButtonText>
-                    </StartButton>
-                )}
+                        {`In the\nhat!`}
+                    </StyledBold>
+                </BannerContainer>
+                <ImageContainer>
+                    <Image
+                        source={require('../../assets/images/tophat.png')}
+                        resizeMode="contain"
+                        style={{
+                            width: imageSize,
+                            height: imageSize,
+                            marginTop: 12,
+                        }}
+                    />
+                </ImageContainer>
+                <ButtonContainer style={{paddingBottom: height * 0.10}}>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Setup' as never)}
+                        style={[
+                            {
+                                width: buttonWidth,
+                                backgroundColor: '#f7c873',
+                                paddingVertical: height * 0.022,
+                                borderColor: '#fff',
+                                borderWidth: 2,
+                                marginTop: height * 0.02,
+                                alignItems: 'center',
+                            },
+                            buttonShadow,
+                        ]}
+                    >
+                        <StyledText
+                            style={{
+                                fontSize: buttonFontSize * 1.2,
+                                color: '#7c4a03',
+                                fontWeight: '600',
+                                letterSpacing: 1,
+                                textAlign: 'center',
+                            }}
+                        >
+                            Start game
+                        </StyledText>
+                    </TouchableOpacity>
+                    {hasSavedGame && (
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('PlayerTurnScreen' as never)}
+                            style={[
+                                {
+                                    width: buttonWidth,
+                                    backgroundColor: '#f7c873',
+                                    paddingVertical: height * 0.022,
+                                    borderColor: '#fff',
+                                    borderWidth: 2,
+                                    marginTop: height * 0.02,
+                                    alignItems: 'center',
+                                },
+                                buttonShadow,
+                            ]}
+                        >
+                            <StyledText
+                                numberOfLines={1}
+                                adjustsFontSizeToFit
+                                style={{
+                                    fontSize: buttonFontSize,
+                                    color: '#7c4a03',
+                                    fontWeight: '600',
+                                    letterSpacing: 1,
+                                    textAlign: 'center',
+                                }}
+                            >
+                                Load last game
+                            </StyledText>
+                        </TouchableOpacity>
+                    )}
+                </ButtonContainer>
             </Content>
         </Background>
     );

@@ -10,6 +10,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import { RandomNamesService } from '../logic/RandomNamesService';
 import { TouchableOpacity } from 'react-native';
 import ListContainer from "../components/ListContainer";
+import TeamOverviewScreen from "./TeamOverviewScreen";
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -87,6 +88,11 @@ const NameItem = styled.View`
     align-items: center;
     border-width: 2px;
     border-color: #f7c873;
+    shadow-color: #000;
+    shadow-opacity: 0.15;
+    shadow-radius: 8px;
+    shadow-offset: 0px 4px;
+    elevation: 4;
 `;
 
 const NameText = styled(StyledText)`
@@ -96,7 +102,7 @@ const NameText = styled(StyledText)`
 
 const SubmitPlayerNames = () => {
     const route = useRoute();
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const [name, setName] = useState('');
     const [names, setNames] = useState<string[]>([]);
     const { players, teams, words, rounds, selectedCategories, customWords } = route.params as {
@@ -140,7 +146,7 @@ const SubmitPlayerNames = () => {
             customWords
         )
         await gameStateService.saveGameState(game)
-        navigation.navigate('PlayerTurnScreen');
+        navigation.navigate('TeamOverviewScreen');
     };
 
     return (
@@ -148,7 +154,7 @@ const SubmitPlayerNames = () => {
             headerText="Enter player names"
             headerLines={2}
             showPrimaryButton
-            primaryButtonText="Next: start game"
+            primaryButtonText="Next: Team overview"
             onPrimaryButtonPress={() => {
                 handleSubmit()
             }}

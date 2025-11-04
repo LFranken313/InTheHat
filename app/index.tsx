@@ -20,7 +20,6 @@ const Button = styled(TouchableOpacity)`
 const ButtonText = styled(Text)`
   color: #fff;
   font-size: 20px;
-  font-weight: bold;
 `;
 
 export default function HomePage() {
