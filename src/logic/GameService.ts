@@ -69,6 +69,15 @@ export class GameService {
         await this.gameStateService.saveGameState(this.game);
     }
 
+    async undoLastGuess(wordName: string): Promise<void> {
+        if (!this.game) throw new Error('No game loaded');
+        const word = this.game.words.find(w => w.name === wordName);
+        if (!word) throw new Error('Word not found');
+        this.game.restoreWordToHat(word);
+        this.game.removeWordFromTeams(word);
+        await this.gameStateService.saveGameState(this.game);
+    }
+
     wordToGuessFromHat(): Word {
         if (!this.game) throw new Error('No game loaded');
         if (this.game.wordsLeftInTheHat.length === 0) throw new Error('End of round');

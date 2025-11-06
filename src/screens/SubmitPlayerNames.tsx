@@ -10,7 +10,6 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import { RandomNamesService } from '../logic/RandomNamesService';
 import { TouchableOpacity } from 'react-native';
 import ListContainer from "../components/ListContainer";
-import TeamOverviewScreen from "./TeamOverviewScreen";
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -31,9 +30,13 @@ const NameInput = styled.TextInput`
     font-size: 20px;
     border-width: 2px;
     border-color: #f7c873;
-    border-radius: 8px;
     margin-bottom: 12px;
     text-align: center;
+    shadow-color: #000;
+    shadow-opacity: 0.15;
+    shadow-radius: 8px;
+    shadow-offset: 0px 4px;
+    elevation: 4;
 `;
 
 const ButtonRow = styled.View`
@@ -161,7 +164,7 @@ const SubmitPlayerNames = () => {
             primaryButtonDisabled={names.length !== players}
         >
             <View style={{ marginTop: 32, alignItems: 'center' }}>
-                <Label>Player name</Label>
+                <Label>Player name:</Label>
                 <NameInput
                     value={name}
                     onChangeText={setName}

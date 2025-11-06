@@ -62,6 +62,16 @@ export class Game {
         this.currentRound += 1;
     }
 
+    restoreWordToHat(word: Word): void {
+        if (!this.wordsLeftInTheHat.includes(word)) {
+            this.wordsLeftInTheHat.push(word);
+        }
+    }
+
+    removeWordFromTeams(word: Word): void {
+        this.teams.forEach(team => team.removeGuessedWord(word));
+    }
+
     private shuffle<T>(array: T[]): T[] {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));

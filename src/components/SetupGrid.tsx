@@ -39,17 +39,17 @@ const GridInput = styled.TextInput`
 `;
 
 
-type SetupGridProps = {
+interface SetupGridProps {
     players: number;
     teams: number;
     words: number;
     rounds: number;
     handleInput: (setter: (n: number) => void) => (text: string) => void;
-    setPlayers: (n: number | string) => void;
-    setTeams: (n: number | string) => void;
-    setWords: (n: number | string) => void;
-    setRounds: (n: number | string) => void;
-};
+    setPlayers: (n: number) => void;
+    setTeams: (n: number) => void;
+    setWords: (n: number) => void;
+    setRounds: (n: number) => void;
+}
 
 export default function SetupGrid({
     players,

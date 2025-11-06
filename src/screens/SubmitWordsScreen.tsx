@@ -1,12 +1,24 @@
 import React, {useState} from 'react';
-import {View, FlatList, Dimensions} from 'react-native';
+import {FlatList, Dimensions} from 'react-native';
 import styled from 'styled-components/native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import presetWords from '../assets/PresetWords.json';
 
 const screenWidth = Dimensions.get('window').width;
 const BUTTON_WIDTH = screenWidth * 0.38;
+
+// const MainContent = styled.View`
+
+// `;
+
+const MainContent = styled.ScrollView`
+    margin-top: 32px;
+    width: 100%;
+    max-height: 78%;
+    flex-shrink: 0;
+`;
 
 const Label = styled(StyledText)`
     font-size: 20px;
@@ -22,9 +34,13 @@ const WordInput = styled.TextInput`
     font-size: 20px;
     border-width: 2px;
     border-color: #f7c873;
-    border-radius: 8px;
     margin-bottom: 12px;
     text-align: center;
+    shadow-color: #000;
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+    elevation: 6;
 `;
 
 const ButtonRow = styled.View`
@@ -38,11 +54,15 @@ const ButtonRow = styled.View`
 const ActionButton = styled.TouchableOpacity`
     background: #6fb8e6;
     padding: 18px 0;
-    border-radius: 8px;
     align-items: center;
     border-width: 2px;
     border-color: #fff;
     width: ${BUTTON_WIDTH}px;
+    shadow-color: #000;
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+    elevation: 6;
 `;
 
 const AddHatButton = styled(ActionButton)`
@@ -80,6 +100,40 @@ const RemoveText = styled(StyledText)`
     margin-top: 4px;
 `;
 
+const BottomBar = styled.View`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    align-items: center;
+    padding-bottom: 24px;
+`;
+
+const WordCountText = styled(StyledText)`
+    color: #7c4a03;
+    margin-top: 12px;
+`;
+
+const FillRandomButton = styled.TouchableOpacity`
+    background: #f7c873;
+    padding: 14px 0;
+    align-items: center;
+    border-width: 2px;
+    border-color: #fff;
+    width: ${BUTTON_WIDTH}px;
+    margin-top: 8px;
+    shadow-color: #000;
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+    elevation: 6;
+`;
+
+const FillRandomText = styled(StyledText)`
+    color: #7c4a03;
+    font-size: 20px;
+`;
+
 const SubmitWordsScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
@@ -93,6 +147,23 @@ const SubmitWordsScreen = () => {
     const [word, setWord] = useState('');
     const [batch, setBatch] = useState<string[]>([]);
     const [hat, setHat] = useState<string[]>([]);
+
+    const getRandomWords = (count: number) => {
+        const used = new Set(hat.map(w => w.toLowerCase()));
+        const available = presetWords
+            .map(w => w.name)
+            .filter(name => !used.has(name.toLowerCase()));
+        const shuffled = available.sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, count);
+    };
+
+    const fillRandom = () => {
+        const missing = requiredWords - hat.length;
+        if (missing > 0) {
+            const randomWords = getRandomWords(missing);
+            setHat([...hat, ...randomWords]);
+        }
+    };
 
     const addWord = () => {
         const trimmed = word.trim();
@@ -135,7 +206,10 @@ const SubmitWordsScreen = () => {
             onPrimaryButtonPress={handleSubmit}
             primaryButtonDisabled={isPrimaryDisabled}
         >
-            <View style={{marginTop: 32, alignItems: 'center', width: '100%'}}>
+            <MainContent
+                contentContainerStyle={{alignItems: 'center'}}
+                showsVerticalScrollIndicator={false}
+            >
                 <Label>
                     Enter at least {requiredWords} words{'\n'}
                     (more is allowed)
@@ -159,7 +233,7 @@ const SubmitWordsScreen = () => {
                 <FlatList
                     data={batch}
                     keyExtractor={(item, idx) => item + idx}
-                    numColumns={3}
+                    numColumns={2}
                     renderItem={({item, index}) => (
                         <WordGridItem onPress={() => removeWord(index)}>
                             <WordText>{item}</WordText>
@@ -169,12 +243,18 @@ const SubmitWordsScreen = () => {
                     style={{width: '100%', minHeight: 60}}
                     scrollEnabled={false}
                 />
-                <StyledText style={{color: '#7c4a03', marginTop: 12}}>
+            </MainContent>
+            <BottomBar>
+                <WordCountText>
                     {hat.length} / {requiredWords} words entered
-                </StyledText>
-            </View>
+                </WordCountText>
+                <FillRandomButton onPress={fillRandom} disabled={hat.length >= requiredWords}>
+                    <FillRandomText>
+                        Fill Random
+                    </FillRandomText>
+                </FillRandomButton>
+            </BottomBar>
         </ScreenContainer>
     );
-};
-
+}
 export default SubmitWordsScreen;

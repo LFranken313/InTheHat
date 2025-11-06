@@ -22,4 +22,10 @@ export class Team {
     this.score += 1;
     this.guessedWords.push(word);
   }
+
+  removeGuessedWord(word: Word): void {
+    this.guessedWords = this.guessedWords.filter(w => w.name !== word.name);
+    if (this.score > 0) this.score -= 1;
+  }
+
 }

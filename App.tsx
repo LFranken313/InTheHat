@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useFonts} from 'expo-font';
 import { ActivityIndicator, View } from 'react-native';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 import StartScreen from './src/screens/StartScreen';
 import SetupScreen from './src/screens/SetupScreen';
@@ -18,6 +19,10 @@ import TeamOverviewScreen from "./src/screens/TeamOverviewScreen";
 
 const Stack = createStackNavigator();
 export default function App() {
+    useEffect(() => {
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    }, []);
+
     const [fontsLoaded] = useFonts({
         'pixel-bold': require('./assets/fonts/PixelifySans-Bold.ttf'),
         'pixel-regular': require('./assets/fonts/PixelifySans-Regular.ttf'),
@@ -30,8 +35,6 @@ export default function App() {
             </View>
         );
     }
-
-
 
     return (
         <NavigationContainer>

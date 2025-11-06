@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {Modal, Image, View, TouchableOpacity} from 'react-native';
+import {Modal} from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import styled from 'styled-components/native';
@@ -11,6 +11,8 @@ const ModalContent = styled.View`
     background: #fffbe6;
     padding: 24px 20px;
     border-radius: 12px;
+    border-width: 2px;
+    border-color: #f7c873;
     align-items: center;
     margin: 100px 32px;
     elevation: 5;
@@ -36,6 +38,11 @@ const CloseButton = styled.TouchableOpacity`
     padding: 10px 24px;
     border-color: #fff;
     border-width: 2px;
+    shadow-color: #000;
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+    elevation: 6;
 `;
 
 const CloseButtonText = styled(StyledText)`
@@ -108,23 +115,14 @@ const SetupScreen = () => {
     const [words, setWords] = useState<number>(20);
     const [rounds, setRounds] = useState<number>(3);
     const [showWarning, setShowWarning] = useState(false);
+    const [hasShownPlayerWarning, setHasShownPlayerWarning] = useState(false);
+    const [hasShownWordWarning, setHasShownWordWarning] = useState(false);
+    const [warningText, setwarningText] = useState('');
     const navigation = useNavigation();
 
     const isFormValid = () => {
-        return players > 0 && teams > 0 && words > 0 && rounds > 0 && players >= teams * 2;
+        return players > 0 && teams > 0 && words > 0 && rounds > 0;
     };
-
-    useEffect(() => {
-        if (
-            teams > 1 &&
-            players > 1 &&
-            (players % teams === 1 || players < teams * 2)
-        ) {
-            setShowWarning(true);
-        } else {
-            setShowWarning(false);
-        }
-    }, [players, teams]);
 
     const getFormValues = () => ({
         players,
@@ -139,6 +137,19 @@ const SetupScreen = () => {
     };
 
     const handleButtonPress = (type: 'quick' | 'custom') => {
+        if (teams > 1 && players < teams * 2 && !hasShownPlayerWarning) {
+            setwarningText(" Warning: At least one team will have only 1 player. Consider adjusting the numbers for balanced" +
+                " teams.")
+            setShowWarning(true);
+            setHasShownPlayerWarning(true);
+            return;
+        }
+        if (words / players < 4 && !hasShownWordWarning) {
+            setwarningText("Please choose at least 4 words per player for a better game experience.")
+            setShowWarning(true);
+            setHasShownWordWarning(true);
+            return;
+        }
         const formValues = getFormValues();
         if (type === 'quick') {
             navigation.navigate('QuickGameScreen', formValues);
@@ -146,6 +157,10 @@ const SetupScreen = () => {
         if (type === 'custom') {
             navigation.navigate('SubmitWordsScreen', formValues);
         }
+    };
+
+    const handleCloseWarning = () => {
+        setShowWarning(false);
     };
 
     return (
@@ -190,13 +205,13 @@ const SetupScreen = () => {
                 transparent
                 visible={showWarning}
                 animationType="fade"
-                onRequestClose={() => setShowWarning(false)}>
+                onRequestClose={handleCloseWarning}
+            >
                 <ModalContent>
                     <ModalText>
-                        Warning: At least one team will have only 1 player. Consider adjusting the numbers for balanced
-                        teams.
+                        {warningText}
                     </ModalText>
-                    <CloseButton onPress={() => setShowWarning(false)}>
+                    <CloseButton onPress={handleCloseWarning}>
                         <CloseButtonText>OK</CloseButtonText>
                     </CloseButton>
                 </ModalContent>

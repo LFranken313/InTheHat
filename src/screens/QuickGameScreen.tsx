@@ -7,7 +7,6 @@ import {useNavigation} from '@react-navigation/native';
 import StyledText from '../components/StyledText';
 import GameOverview from '../components/GameOverview';
 import ScreenContainer from '../components/ScreenContainer';
-import PrimaryButton from "../components/PrimaryButton";
 import ListContainer from "../components/ListContainer";
 
 
@@ -41,7 +40,7 @@ const CategoryCard = styled.TouchableOpacity<{ selected: boolean }>`
     padding: 18px 0;
     background-color: ${props => (props.selected ? '#f7c873' : '#fff')};
     border-width: 2px;
-    border-color: #f7c873;
+    border-color: ${props => (props.selected ? '#fff' : '#f7c873')};
     align-items: center;
     shadow-color: #000;
     shadow-opacity: 0.15;
@@ -49,6 +48,27 @@ const CategoryCard = styled.TouchableOpacity<{ selected: boolean }>`
     shadow-offset: 0px 4px;
     elevation: 4;
     min-width: 0;
+`;
+
+const SelectAllButton = styled.TouchableOpacity<{ selected: boolean }>`
+    background-color: ${props => (props.selected ? '#f7c873' : '#fff')};
+    padding: 12px 24px;
+    border-width: 2px;
+    border-color: ${props => (props.selected ? '#fff' : '#f7c873')};
+    align-self: center;
+    margin-bottom: 12px;
+    shadow-color: #000;
+    shadow-opacity: 0.15;
+    shadow-radius: 8px;
+    shadow-offset: 0px 4px;
+    elevation: 4;
+    min-width: 0;
+`;
+
+const SelectAllText = styled(StyledText)<{ selected: boolean }>`
+    color: ${props => (props.selected ? '#fff' : '#7c4a03')};
+    font-size: 18px;
+    font-weight: 600;
 `;
 
 
@@ -65,11 +85,20 @@ const QuickGameScreen = () => {
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const isValid = selected.size > 0;
     const [loading, setLoading] = useState(true);
+
     const {players, teams, words, rounds} = route.params as {
         players: number;
         teams: number;
         words: number;
         rounds: number;
+    };
+
+    const handleSelectAll = () => {
+        if (selected.size === categories.length) {
+            setSelected(new Set());
+        } else {
+            setSelected(new Set(categories));
+        }
     };
 
     useEffect(() => {
@@ -119,12 +148,20 @@ const QuickGameScreen = () => {
             primaryButtonText="Next: players"
             onPrimaryButtonPress={handleSubmit}>
             <GameOverview players={players} teams={teams} words={words} rounds={rounds}/>
-            <Subheader>Available Categories:</Subheader>
+            <Subheader>{categories.length} available Categories:</Subheader>
+            <SelectAllButton
+                onPress={handleSelectAll}
+                selected={selected.size === categories.length}
+            >
+                <SelectAllText selected={selected.size === categories.length}>
+                    {selected.size === categories.length ? 'Deselect All' : 'Select All'}
+                </SelectAllText>
+            </SelectAllButton>
             <ListContainer>
                 <FlatList
                     data={categories}
                     keyExtractor={item => item}
-                    numColumns={3}
+                    numColumns={2}
                     contentContainerStyle={{paddingHorizontal: 8, alignItems: 'stretch'}}
                     renderItem={({item}) => (
                         <CategoryCard

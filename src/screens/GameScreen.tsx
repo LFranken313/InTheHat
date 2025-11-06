@@ -1,14 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {Modal, Image} from 'react-native';
+import {NavigationPreventRemoveEvent, RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {Image} from 'react-native';
 import styled from 'styled-components/native';
 import {GameStateService} from '../logic/GameStateService';
 import {WordService} from '../logic/WordService';
 import {GameService} from '../logic/GameService';
-import { TouchableOpacity } from 'react-native';
 import StyledText from '../components/StyledText';
 import ScreenContainer from '../components/ScreenContainer';
-
+import GameTopBar from "../components/GameTopBar";
+import GameExitModal from "../components/GameExitModal";
+import {StackNavigationProp} from "@react-navigation/stack";
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -20,6 +21,11 @@ const Container = styled.View`
     justify-content: center;
     align-items: stretch;
     padding: 32px 0 32px 0;
+
+    border-width: 2px;
+    border-color: #d7b899;
+    border-radius: 16px;
+    margin-top: 3%;
 `;
 
 const CardsLeftText = styled(StyledText)`
@@ -35,16 +41,6 @@ const CurrentStreak = styled(StyledText)`
     text-align: center;
     margin-top: 24px;
     margin-bottom: 8px;
-`;
-
-const Timer = styled(StyledText)`
-    position: absolute;
-    top: 10%;
-    right: 10%;
-    font-size: 28px;
-    color: #e67c73;
-    font-weight: bold;
-    z-index: 10;
 `;
 
 const CardImageContainer = styled.View`
@@ -97,64 +93,12 @@ const buttonShadow = {
     elevation: 4,
 };
 
-const ExitButton = styled.TouchableOpacity`
-    position: absolute;
-    top: 10%;
-    left: 10%;
-    z-index: 200;
-    background: #e67c73;
-    padding: 8px 16px;
-    elevation: 3;
-    border-width: 2px;
-    border-color: #fff;
-`;
-
-const ExitButtonText = styled(StyledText)`
-    color: #fff;
-    font-size: 18px;
-`;
-
-const ModalContainer = styled.View`
-    flex: 1;
-    background: rgba(0, 0, 0, 0.7);
-    justify-content: center;
-    align-items: center;
-`;
-
-const ModalCard = styled.View`
-    background: #fffbe6;
-    border-radius: 16px;
-    padding: 32px 24px;
-    align-items: center;
-    width: 80%;
-`;
-
-const ModalText = styled(StyledText)`
-    font-size: 22px;
-    color: #7c4a03;
-    text-align: center;
-    margin-bottom: 24px;
-`;
-
-const ModalButton = styled.TouchableOpacity`
-    background: #e67c73;
-    padding: 12px 32px;
-    border-width: 2px;
-    border-color: #fff;
-`;
-
-const ModalButtonText = styled(StyledText)`
-    color: #fff;
-    font-size: 18px;
-`;
-
 const FullscreenOverlay = styled.TouchableOpacity`
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 100;
 `;
 
 const GameScreen = () => {
@@ -169,9 +113,20 @@ const GameScreen = () => {
     const [carryOver, setCarryOver] = useState<{ player: string, time: number } | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const gameRef = useRef<any>(null);
-    const route = useRoute();
+    const route = useRoute<RouteProp<{ params: GameScreenRouteParams }, 'params'>>();
     const playerName = route.params?.playerName;
-    const navigation = useNavigation();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+    type GameScreenRouteParams = {
+        playerName: string;
+    };
+
+    type RootStackParamList = {
+        PlayerTurnScreen: undefined;
+        Start: undefined;
+        GameEndScreen: undefined;
+        RoundEndScreen: undefined;
+    };
 
     useEffect(() => {
         if (showExitModal && intervalRef.current) {
@@ -180,10 +135,9 @@ const GameScreen = () => {
     }, [showExitModal]);
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+        return navigation.addListener('beforeRemove', (e: NavigationPreventRemoveEvent) => {
             e.preventDefault();
         });
-        return unsubscribe;
     }, [navigation]);
 
     useEffect(() => {
@@ -241,7 +195,7 @@ const GameScreen = () => {
 
     const handleGuessed = async () => {
         if (isTimeUp || paused) return;
-        setLastGuessedWord(currentWord); // Track last guessed word
+        setLastGuessedWord(currentWord);
         const loadedGame = await gameService.continueGame();
         const isLastWord = loadedGame.wordsLeftInTheHat.length === 1;
         await gameService.wordGuessed(
@@ -295,32 +249,23 @@ const GameScreen = () => {
         return 22;
     };
 
-    const wordDisplay = isTimeUp
-        ? "Time's up!"
-        : roundEnded
-            ? "Round has ended!"
-            : showExitModal
-                ? " "
-                : currentWord.toUpperCase();
+    const getWordDisplay = () => {
+        if (isTimeUp) return "Time's up!";
+        if (roundEnded) return "Round has ended!";
+        if (showExitModal) return " ";
+        return currentWord.toUpperCase();
+    };
 
-
+    const wordDisplay = getWordDisplay();
 
     const undoLastGuess = async () => {
-        if (!lastGuessedWord || !gameRef.current) return;
-        // Add the word back to the hat
-        const wordObj = gameRef.current.words.find(w => w.name === lastGuessedWord);
-        if (wordObj) {
-            gameRef.current.wordsLeftInTheHat.push(wordObj);
-            // Optionally, remove the word from the team's correct guesses
-            gameRef.current.teams.forEach(team => {
-                team.guessedWords = team.guessedWords.filter(w => w.name !== lastGuessedWord);
-            });
-            await gameStateService.saveGameState(gameRef.current);
-            setCurrentWord(lastGuessedWord);
-            setStreak(prev => (prev > 0 ? prev - 1 : 0));
-            setPaused(false);
-            setLastGuessedWord(null);
-        }
+        if (!lastGuessedWord) return;
+        await gameService.undoLastGuess(lastGuessedWord);
+        setCurrentWord(lastGuessedWord);
+        setStreak(prev => (prev > 0 ? prev - 1 : 0));
+        setPaused(false);
+        setLastGuessedWord(null);
+        gameRef.current = await gameService.continueGame();
     };
 
     return (
@@ -330,28 +275,13 @@ const GameScreen = () => {
             onPrimaryButtonPress={handleGuessed}
             primaryButtonDisabled={isTimeUp || showExitModal || paused}
         >
-            <ExitButton onPress={handleExit} style={buttonShadow}>
-                <ExitButtonText>Exit</ExitButtonText>
-            </ExitButton>
-
-            <Timer>{timer}s</Timer>
-
-            <TouchableOpacity
-                onPress={undoLastGuess}
-                disabled={!lastGuessedWord || showExitModal || paused}
-                style={{
-                    backgroundColor: '#6fb8e6',
-                    padding: 12,
-                    top: 30,
-                    borderRadius: 8,
-                    marginBottom: 12,
-                    alignSelf: 'center',
-                    opacity: !lastGuessedWord || showExitModal || paused ? 0.5 : 1,
-                }}
-            >
-                <StyledText style={{ color: '#fff', fontSize: 18 }}>Undo</StyledText>
-            </TouchableOpacity>
-
+            <GameTopBar
+                timer={timer}
+                onExit={handleExit}
+                onUndo={undoLastGuess}
+                undoDisabled={!lastGuessedWord || showExitModal || paused}
+                buttonShadow={buttonShadow}
+            />
             <Container>
                 <CardImageContainer>
                     <CardImage
@@ -384,29 +314,12 @@ const GameScreen = () => {
                     onPress={() => navigation.navigate('RoundEndScreen')}
                 />
             )}
-            <Modal
+            <GameExitModal
                 visible={showExitModal}
-                transparent
-                animationType="fade"
                 onRequestClose={() => setShowExitModal(false)}
-            >
-                <ModalContainer>
-                    <ModalCard>
-                        <ModalText>
-                            Exit game?{'\n'}(game will be saved)
-                        </ModalText>
-                        <ModalButton onPress={confirmExit} style={buttonShadow}>
-                            <ModalButtonText>Exit Game</ModalButtonText>
-                        </ModalButton>
-                        <ModalButton
-                            style={[{marginTop: 16, backgroundColor: '#6fb8e6'}, buttonShadow]}
-                            onPress={() => setShowExitModal(false)}
-                        >
-                            <ModalButtonText>Cancel</ModalButtonText>
-                        </ModalButton>
-                    </ModalCard>
-                </ModalContainer>
-            </Modal>
+                onConfirmExit={confirmExit}
+                buttonShadow={buttonShadow}
+            />
         </ScreenContainer>
     );
 };
