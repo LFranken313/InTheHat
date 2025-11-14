@@ -4,6 +4,9 @@ import {GameStateService} from '../logic/GameStateService';
 import {GameService} from '../logic/GameService';
 import {WordService} from '../logic/WordService';
 
+import type {StackNavigationProp} from '@react-navigation/stack';
+import type { EventArg } from '@react-navigation/native';
+
 import styled from 'styled-components/native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
@@ -20,54 +23,57 @@ const Centered = styled.View`
 `;
 
 const TeamName = styled(StyledBold)`
-    color: #6fb8e6;
+    color: ${({ theme }) => theme.PlayerTurnTeamNameColor};
     font-size: 38px;
     text-align: center;
     margin-bottom: 16px;
+    text-shadow-color: ${({ theme }) => theme.TeamShadowColor};
+    text-shadow-offset: 1px 2px;
+    text-shadow-radius: 4px;
 `;
 
-const shadowStyle = {
-    textShadowColor: '#000',
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 4,
-};
-
 const PlayerName = styled(StyledBold)`
-    color: #f7c873;
+    color: ${({ theme }) => theme.PlayerTurnPlayerNameColor};
     font-size: 96px;
     text-align: center;
-    text-shadow-color: #b88a2a;
+    text-shadow-color: ${({ theme }) => theme.PlayerTurnPlayerNameShadow};
     text-shadow-offset: 3px 3px;
     text-shadow-radius: 6px;
     margin-bottom: 24px;
     letter-spacing: 3px;
+    max-width: 90%;
+    align-self: center;
 `;
 
 const ReadyText = styled(StyledText)`
     font-size: 22px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.PlayerTurnReadyTextColor};
     margin-bottom: 32px;
     text-align: center;
 `;
 
 const TimeLeftText = styled(StyledText)`
     font-size: 20px;
-    color: #e67c73;
+    color: ${({ theme }) => theme.PlayerTurnTimeLeftTextColor};
     margin-bottom: 16px;
     text-align: center;
 `;
 
+type RootStackParamList = {
+    PlayerTurnScreen: undefined;
+    GameScreen: { playerName: string | null };
+}
+
 const PlayerTurnScreen = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [currentPlayerName, setCurrentPlayerName] = useState<string | null>(null);
     const [currentTeamName, setCurrentTeamName] = useState<string | null>(null);
     const [carryOverTime, setCarryOverTime] = useState<number | null>(null);
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+        return navigation.addListener('beforeRemove', (e: EventArg<'beforeRemove', false, any>) => {
             e.preventDefault();
         });
-        return unsubscribe;
     }, [navigation]);
 
     useEffect(() => {
@@ -94,7 +100,7 @@ const PlayerTurnScreen = () => {
     }, []);
 
     const handleGo = () => {
-        navigation.navigate('GameScreen', {playerName: currentPlayerName});
+        navigation.navigate('GameScreen', { playerName: currentPlayerName });
     };
 
     return (
@@ -113,8 +119,14 @@ const PlayerTurnScreen = () => {
                 {currentPlayerName && currentTeamName && (
                     <>
                         <ReadyText>Are you ready</ReadyText>
-                        <TeamName style={shadowStyle}>{currentTeamName}'s</TeamName>
-                        <PlayerName>{currentPlayerName}</PlayerName>
+                        <TeamName>{currentTeamName}'s</TeamName>
+                        <PlayerName
+                            numberOfLines={2}
+                            adjustsFontSizeToFit
+                            minimumFontScale={0.3}
+                        >
+                            {currentPlayerName}
+                        </PlayerName>
                     </>
                 )}
             </Centered>

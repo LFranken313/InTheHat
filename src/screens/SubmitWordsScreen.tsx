@@ -1,17 +1,14 @@
 import React, {useState} from 'react';
 import {FlatList, Dimensions} from 'react-native';
-import styled from 'styled-components/native';
+import styled, {useTheme} from 'styled-components/native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import presetWords from '../assets/PresetWords.json';
 
 const screenWidth = Dimensions.get('window').width;
 const BUTTON_WIDTH = screenWidth * 0.38;
-
-// const MainContent = styled.View`
-
-// `;
 
 const MainContent = styled.ScrollView`
     margin-top: 32px;
@@ -22,7 +19,7 @@ const MainContent = styled.ScrollView`
 
 const Label = styled(StyledText)`
     font-size: 20px;
-    color: #7c4a03;
+    color: ${({theme}) => theme.SubmitWordsLabelColor};
     margin-bottom: 8px;
     text-align: center;
 `;
@@ -30,13 +27,13 @@ const Label = styled(StyledText)`
 const WordInput = styled.TextInput`
     height: 48px;
     padding: 8px 12px;
-    background: #fff;
+    background: ${({theme}) => theme.SubmitWordsInputBackground};
     font-size: 20px;
     border-width: 2px;
-    border-color: #f7c873;
+    border-color: ${({theme}) => theme.SubmitWordsInputBorder};
     margin-bottom: 12px;
     text-align: center;
-    shadow-color: #000;
+    shadow-color: ${({theme}) => theme.SubmitWordsInputShadow};
     shadow-offset: 0px 4px;
     shadow-opacity: 0.25;
     shadow-radius: 4px;
@@ -52,13 +49,13 @@ const ButtonRow = styled.View`
 `;
 
 const ActionButton = styled.TouchableOpacity`
-    background: #6fb8e6;
+    background: ${({theme}) => theme.SubmitWordsActionButtonBackground};
     padding: 18px 0;
     align-items: center;
     border-width: 2px;
-    border-color: #fff;
+    border-color: ${({theme}) => theme.SubmitWordsActionButtonBorder};
     width: ${BUTTON_WIDTH}px;
-    shadow-color: #000;
+    shadow-color: ${({theme}) => theme.SubmitWordsActionButtonShadow};
     shadow-offset: 0px 4px;
     shadow-opacity: 0.25;
     shadow-radius: 4px;
@@ -66,21 +63,25 @@ const ActionButton = styled.TouchableOpacity`
 `;
 
 const AddHatButton = styled(ActionButton)`
-    background: #43d9be;
+    background: ${({theme}) => theme.SubmitWordsAddHatButtonBackground};
 `;
 
 const AddButtonText = styled(StyledText)`
-    color: #fff;
+    color: ${({theme}) => theme.SubmitWordsAddButtonText};
     font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+    width: 100%;
 `;
 
 const WordGridItem = styled.TouchableOpacity<{ selected?: boolean }>`
     flex: 1;
     margin: 6px;
     padding: 14px 0;
-    background-color: #fffbe6;
+    background-color: ${({theme}) => theme.SubmitWordsGridItemBackground};
     border-width: 2px;
-    border-color: #f7c873;
+    border-color: ${({theme}) => theme.SubmitWordsGridItemBorder};
     align-items: center;
     border-radius: 8px;
     min-width: 0;
@@ -88,14 +89,14 @@ const WordGridItem = styled.TouchableOpacity<{ selected?: boolean }>`
 
 const WordText = styled(StyledText)`
     font-size: 18px;
-    color: #7c4a03;
+    color: ${({theme}) => theme.SubmitWordsGridItemText};
     text-align: center;
     width: 100%;
     flex-shrink: 1;
 `;
 
 const RemoveText = styled(StyledText)`
-    color: #e67c73;
+    color: ${({theme}) => theme.SubmitWordsRemoveText};
     font-size: 15px;
     margin-top: 4px;
 `;
@@ -110,19 +111,19 @@ const BottomBar = styled.View`
 `;
 
 const WordCountText = styled(StyledText)`
-    color: #7c4a03;
+    color: ${({theme}) => theme.SubmitWordsCountText};
     margin-top: 12px;
 `;
 
 const FillRandomButton = styled.TouchableOpacity`
-    background: #f7c873;
+    background: ${({theme}) => theme.SubmitWordsFillRandomButtonBackground};
     padding: 14px 0;
     align-items: center;
     border-width: 2px;
-    border-color: #fff;
+    border-color: ${({theme}) => theme.SubmitWordsFillRandomButtonBorder};
     width: ${BUTTON_WIDTH}px;
     margin-top: 8px;
-    shadow-color: #000;
+    shadow-color: ${({theme}) => theme.SubmitWordsFillRandomButtonShadow};
     shadow-offset: 0px 4px;
     shadow-opacity: 0.25;
     shadow-radius: 4px;
@@ -130,12 +131,29 @@ const FillRandomButton = styled.TouchableOpacity`
 `;
 
 const FillRandomText = styled(StyledText)`
-    color: #7c4a03;
+    color: ${({theme}) => theme.SubmitWordsFillRandomText};
     font-size: 20px;
 `;
 
+type RootStackParamList = {
+    SubmitWordsScreen: {
+        words: number;
+        players: number;
+        teams: number;
+        rounds: number;
+    };
+    SubmitPlayerNamesScreen: {
+        words: number;
+        players: number;
+        teams: number;
+        rounds: number;
+        selectedCategories: string[];
+        customWords: string[];
+    };
+};
+
 const SubmitWordsScreen = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const route = useRoute();
     const {words: requiredWords, players, teams, rounds} = route.params as {
         words: number;
@@ -184,12 +202,12 @@ const SubmitWordsScreen = () => {
     };
 
     const handleSubmit = () => {
-        navigation.navigate('SubmitPlayerNames', {
+        navigation.navigate('SubmitPlayerNamesScreen', {
             words: requiredWords,
             players,
             teams,
             rounds,
-            selectedCategories: [],
+            selectedCategories: [] as string[],
             customWords: hat
         });
     };

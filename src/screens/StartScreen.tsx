@@ -1,35 +1,52 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
-import {LinearGradient} from 'expo-linear-gradient';
 import {GameStateService} from '../logic/GameStateService';
 import {useNavigation} from '@react-navigation/native';
+import {useWindowDimensions, Image} from 'react-native';
+import ScreenContainer from '../components/ScreenContainer';
 import StyledBold from '../components/StyledBold';
 import StyledText from '../components/StyledText';
-import {useWindowDimensions, Image, TouchableOpacity} from 'react-native';
 
-const Background = styled(LinearGradient).attrs({
-    colors: ['#f5e9da', '#e9dbc7'],
-    start: {x: 0, y: 0},
-    end: {x: 1, y: 1},
-})`
-    flex: 1;
-    justify-content: center;
-    align-items: center;
+const Banner = styled(StyledBold)<{ fontSize: number }>`
+    font-size: ${({fontSize}) => fontSize}px;
+    color: ${({ theme }) => theme.BannerColor};
+    letter-spacing: 2px;
+    text-align: center;
+    text-shadow-color: ${({ theme }) => theme.BannerColorShadow};
+    text-shadow-offset: 2px 2px;
+    text-shadow-radius: 4px;
+    margin-top: 8%;
 `;
 
-const Content = styled.View`
-    flex: 1;
+const ButtonLabel = styled(StyledText)<{ fontSize: number }>`
+    font-size: ${({fontSize}) => fontSize}px;
+    color: ${({ theme }) => theme.MainScreenButtonLabel};
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
     width: 100%;
 `;
 
-const BannerContainer = styled.View`
+const Button = styled.TouchableOpacity<{ width: number }>`
+    width: ${({width}) => width}px;
+    min-height: 56px;
+    background-color: ${({ theme }) => theme.MainScreenButtonBackGround};
+    border-color: ${({ theme }) => theme.MainScreenButtonBorder};
+    border-width: 2px;
+    margin-top: 16px;
     align-items: center;
-    margin-top: 8%;
+    justify-content: center;
+    shadow-color: ${({ theme }) => theme.MainScreenButtonShadow};
+    shadow-offset: 0px 2px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+    elevation: 4;
 `;
 
 const ImageContainer = styled.View`
     justify-content: flex-start;
     align-items: center;
+    margin-top: 12px;
 `;
 
 const ButtonContainer = styled.View`
@@ -57,105 +74,45 @@ const StartScreen = () => {
         checkSavedGame();
     }, []);
 
-    const buttonShadow = {
-        shadowColor: '#000',
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 4,
-    };
-
     return (
-        <Background>
-            <Content>
-                <BannerContainer>
-                    <StyledBold
-                        style={{
-                            fontSize: bannerFontSize,
-                            color: '#77dd77',
-                            letterSpacing: 2,
-                            textAlign: 'center',
-                            textShadowColor: '#2e7d32',
-                            textShadowOffset: {width: 2, height: 2},
-                            textShadowRadius: 4,
-                        }}
+        <ScreenContainer>
+            <Banner fontSize={bannerFontSize}>{`In the\nhat!`}</Banner>
+            <ImageContainer>
+                <Image
+                    source={require('../../assets/images/tophat.png')}
+                    resizeMode="contain"
+                    style={{
+                        width: imageSize,
+                        height: imageSize,
+                    }}
+                />
+            </ImageContainer>
+            <ButtonContainer style={{paddingBottom: height * 0.10}}>
+                <Button
+                    width={buttonWidth}
+                    padding={height * 0.022}
+                    onPress={() => navigation.navigate('Setup' as never)}
+                >
+                    <ButtonLabel fontSize={buttonFontSize * 1.2}>Start game</ButtonLabel>
+                </Button>
+                {hasSavedGame && (
+                    <Button
+                        width={buttonWidth}
+                        padding={height * 0.022}
+                        onPress={() => navigation.navigate('PlayerTurnScreen' as never)}
                     >
-                        {`In the\nhat!`}
-                    </StyledBold>
-                </BannerContainer>
-                <ImageContainer>
-                    <Image
-                        source={require('../../assets/images/tophat.png')}
-                        resizeMode="contain"
-                        style={{
-                            width: imageSize,
-                            height: imageSize,
-                            marginTop: 12,
-                        }}
-                    />
-                </ImageContainer>
-                <ButtonContainer style={{paddingBottom: height * 0.10}}>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('Setup' as never)}
-                        style={[
-                            {
-                                width: buttonWidth,
-                                backgroundColor: '#f7c873',
-                                paddingVertical: height * 0.022,
-                                borderColor: '#fff',
-                                borderWidth: 2,
-                                marginTop: height * 0.02,
-                                alignItems: 'center',
-                            },
-                            buttonShadow,
-                        ]}
-                    >
-                        <StyledText
-                            style={{
-                                fontSize: buttonFontSize * 1.2,
-                                color: '#7c4a03',
-                                fontWeight: '600',
-                                letterSpacing: 1,
-                                textAlign: 'center',
-                            }}
-                        >
-                            Start game
-                        </StyledText>
-                    </TouchableOpacity>
-                    {hasSavedGame && (
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('PlayerTurnScreen' as never)}
-                            style={[
-                                {
-                                    width: buttonWidth,
-                                    backgroundColor: '#f7c873',
-                                    paddingVertical: height * 0.022,
-                                    borderColor: '#fff',
-                                    borderWidth: 2,
-                                    marginTop: height * 0.02,
-                                    alignItems: 'center',
-                                },
-                                buttonShadow,
-                            ]}
-                        >
-                            <StyledText
-                                numberOfLines={1}
-                                adjustsFontSizeToFit
-                                style={{
-                                    fontSize: buttonFontSize,
-                                    color: '#7c4a03',
-                                    fontWeight: '600',
-                                    letterSpacing: 1,
-                                    textAlign: 'center',
-                                }}
-                            >
-                                Load last game
-                            </StyledText>
-                        </TouchableOpacity>
-                    )}
-                </ButtonContainer>
-            </Content>
-        </Background>
+                        <ButtonLabel fontSize={buttonFontSize}>Load last game</ButtonLabel>
+                    </Button>
+                )}
+                <Button
+                    width={buttonWidth}
+                    padding={height * 0.022}
+                    onPress={() => navigation.navigate('SettingsScreen' as never)}
+                >
+                    <ButtonLabel fontSize={buttonFontSize}>Settings</ButtonLabel>
+                </Button>
+            </ButtonContainer>
+        </ScreenContainer>
     );
 };
 

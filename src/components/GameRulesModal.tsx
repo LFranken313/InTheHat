@@ -10,10 +10,10 @@ type GameRulesModalProps = {
 };
 
 const ModalContainer = styled.View<{ width: number; maxHeight: number }>`
-    background-color: #fffbe6;
+    background-color: ${({ theme }) => theme.ModalCardBackground};
     border-radius: 16px;
     border-width: 2px;
-    border-color: #f7c873;
+    border-color: ${({ theme }) => theme.ModalCardBorder};
     width: ${props => props.width}px;
     max-height: ${props => props.maxHeight}px;
     position: relative;
@@ -21,7 +21,7 @@ const ModalContainer = styled.View<{ width: number; maxHeight: number }>`
 `;
 
 const CloseIcon = styled(StyledText)`
-    color: #e67c73;
+    color: ${({ theme }) => theme.ModalButtonBackground};
     font-size: 28px;
     text-shadow: 1px 1px 4px #00000055;
 `;

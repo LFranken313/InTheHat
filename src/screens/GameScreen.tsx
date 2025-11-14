@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {NavigationPreventRemoveEvent, RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute, EventArg, RouteProp} from '@react-navigation/native';
 import {Image} from 'react-native';
 import styled from 'styled-components/native';
 import {GameStateService} from '../logic/GameStateService';
@@ -17,19 +17,19 @@ const gameService = new GameService(gameStateService, wordService);
 
 const Container = styled.View`
     flex: 1;
-    background: #f5e9da;
+    background: ${({ theme }) => theme.GameScreenContainerBackground};
     justify-content: center;
     align-items: stretch;
     padding: 32px 0 32px 0;
 
     border-width: 2px;
-    border-color: #d7b899;
+    border-color: ${({ theme }) => theme.GameScreenContainerBorder};
     border-radius: 16px;
     margin-top: 3%;
 `;
 
 const CardsLeftText = styled(StyledText)`
-    color: #7c4a03;
+    color: ${({ theme }) => theme.CardsLeftTextColor};
     margin-top: 12px;
     text-align: center;
     align-self: center;
@@ -37,7 +37,7 @@ const CardsLeftText = styled(StyledText)`
 
 const CurrentStreak = styled(StyledText)`
     font-size: 30px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.CurrentStreakColor};
     text-align: center;
     margin-top: 24px;
     margin-bottom: 8px;
@@ -67,31 +67,30 @@ const CardTextOverlay = styled.View`
     align-items: center;
     justify-content: center;
 `;
-
 const WordText = styled(StyledText)<{ fontSize: number }>`
     max-width: 90%;
     padding-horizontal: 12px;
     text-align: center;
     overflow: hidden;
     font-size: ${({fontSize}) => fontSize}px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.WordTextColor};
     letter-spacing: 2px;
 `;
 
 const HintText = styled(StyledText)`
     font-size: 18px;
-    color: #b88a2a;
+    color: ${({ theme }) => theme.HintTextColor};
     text-align: center;
     margin-top: 32px;
 `;
 
-const buttonShadow = {
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+const buttonShadow = (theme) => ({
+    shadowColor: theme.MainScreenButtonShadow,
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 4,
-};
+});
 
 const FullscreenOverlay = styled.TouchableOpacity`
     position: absolute;
@@ -135,7 +134,7 @@ const GameScreen = () => {
     }, [showExitModal]);
 
     useEffect(() => {
-        return navigation.addListener('beforeRemove', (e: NavigationPreventRemoveEvent) => {
+        return navigation.addListener('beforeRemove', (e: EventArg<'beforeRemove', false, any>) => {
             e.preventDefault();
         });
     }, [navigation]);

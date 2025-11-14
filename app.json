@@ -2,7 +2,7 @@
   "expo": {
     "name": "In the hat!",
     "slug": "maninthehat",
-    "icon": "./assets/images/AppIcon.png",
+    "icon": "./assets/images/tophat.png",
     "extra": {
       "eas": {
         "projectId": "f6de71d6-4913-4a75-9fb7-a41503f3799f"
@@ -11,7 +11,7 @@
     "android": {
       "package": "com.lucafranken.maninthehat",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/AppIcon.png",
+        "foregroundImage": "./assets/images/tophat.png",
         "backgroundColor": "#FFFFFF"
       }
     },

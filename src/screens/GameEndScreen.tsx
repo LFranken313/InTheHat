@@ -9,6 +9,7 @@ import {WordService} from '../logic/WordService';
 import {GameService} from "../logic/GameService";
 import {Game} from '../models/Game';
 import winningMessage from '../assets/WinningMessage.json'
+import { useTheme } from 'styled-components/native';
 
 const primaryBlue = '#6fb8e6';
 const gold = '#FFD700';
@@ -25,7 +26,7 @@ const TeamRow = styled.View`
 `;
 
 const TeamName = styled(StyledText)<{ fontSize: number; color?: string }>`
-    color: ${({ color }) => color || '#7c4a03'};
+    color: ${({ color, theme }) => color || theme.TeamNameColor};
     font-size: ${({fontSize}) => fontSize}px;
     flex: 1;
     flex-basis: 0;
@@ -35,7 +36,7 @@ const TeamName = styled(StyledText)<{ fontSize: number; color?: string }>`
 `;
 
 const TeamScore = styled(StyledText)<{ fontSize: number }>`
-    color: #e67c73;
+    color: ${({ theme }) => theme.TeamScoreColor};
     font-size: ${({fontSize}) => fontSize}px;
     flex: none;
     min-width: 0;
@@ -46,31 +47,19 @@ const SubBanner = styled(StyledText)<{ color?: string }>`
     font-size: 36px;
     text-align: center;
     margin-top: 10%;
-    color: ${({ color }) => color || '#2e7d32'};
+    color: ${({ color, theme }) => color || theme.SubBannerColor};
 `;
 
 const TeamsScroll = styled(ScrollView)`
     max-height: 400px;
     width: 100%;
     border-width: 2px;
-    border-color: #f7c873;
-    background: #fffbe6;
+    border-color: ${({ theme }) => theme.TeamsScrollBorder};
+    background: ${({ theme }) => theme.TeamsScrollBackground};
     padding-vertical: 8px;
     margin-top: 5%;
 `;
 
-
-const shadowStyle = {
-    textShadowColor: '#000',
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 4,
-};
-
-const whiteShadowStyle = {
-    textShadowColor: '#fff',
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 4,
-};
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -81,6 +70,19 @@ const GameEndScreen = () => {
     const [teams, setTeams] = useState<{ name: string; score: number }[]>([]);
     const [game, setGame] = useState<Game>(null);
     const [message, setMessage] = useState<string>('');
+    const theme = useTheme();
+
+    const shadowStyle = {
+        textShadowColor: theme.TeamShadowColor,
+        textShadowOffset: { width: 1, height: 2 },
+        textShadowRadius: 4,
+    };
+
+    const whiteShadowStyle = {
+        textShadowColor: theme.TeamWhiteShadowColor,
+        textShadowOffset: { width: 1, height: 2 },
+        textShadowRadius: 4,
+    };
 
     useEffect(() => {
         const loadGame = async () => {
@@ -122,7 +124,11 @@ const GameEndScreen = () => {
             primaryButtonText="Back to Start"
             onPrimaryButtonPress={handleSubmit}
         >
-            <SubBanner color={primaryBlue} style={shadowStyle}>
+            <SubBanner color={theme.primaryButtonBlue} style={{
+                textShadowColor: theme.TeamShadowColor,
+                textShadowOffset: { width: 1, height: 2 },
+                textShadowRadius: 4,
+            }}>
                 {message ? message + '\n' : ''}
                 {winner.name}
             </SubBanner>

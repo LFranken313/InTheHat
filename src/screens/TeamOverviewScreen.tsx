@@ -4,19 +4,20 @@ import styled from 'styled-components/native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import {GameStateService} from '../logic/GameStateService';
-import {useNavigation} from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 
 const windowHeight = Dimensions.get('window').height;
 const maxScrollHeight = Math.min(windowHeight * 0.70);
 
 const TeamCard = styled.View`
-    background: #fffbe6;
+    background: ${({ theme }) => theme.TeamCardBackground};
     border-radius: 12px;
     padding: 20px 16px;
     margin-bottom: 18px;
     border-width: 2px;
-    border-color: #f7c873;
-    shadow-color: #000;
+    border-color: ${({ theme }) => theme.TeamCardBorder};
+    shadow-color: ${({ theme }) => theme.TeamCardShadow};
     shadow-opacity: 0.15;
     shadow-radius: 8px;
     shadow-offset: 0px 4px;
@@ -25,7 +26,7 @@ const TeamCard = styled.View`
 
 const TeamName = styled(StyledText)`
     font-size: 24px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.TeamNameColor};
     margin-bottom: 10px;
     text-align: center;
 `;
@@ -34,15 +35,17 @@ const PlayersRow = styled.View`
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
+    gap: 8px;
 `;
 
 const PlayerName = styled(StyledText)`
     font-size: 18px;
-    color: #b88a2a;
-    margin: 4px;
+    color: ${({ theme }) => theme.PlayerNameColor};
+    margin: 0 4px 4px 4px;
     text-align: center;
-    min-width: 90px;
-    max-width: 120px;
+    min-width: 70px;
+    max-width: 100px;
 `;
 
 const TeamsScroll = styled(ScrollView)`
@@ -51,10 +54,20 @@ const TeamsScroll = styled(ScrollView)`
     margin-top: 32px;
 `;
 
+type RootStackParamList = {
+    TeamOverviewScreen: undefined;
+    PlayerTurnScreen: undefined;
+};
+
+type TeamOverviewScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'TeamOverviewScreen'
+>;
+
+
 export default function TeamOverviewScreen() {
     const [teams, setTeams] = useState<{ name: string; players: { name: string }[] }[]>([]);
-    const navigation = useNavigation();
-
+    const navigation = useNavigation<TeamOverviewScreenNavigationProp>();
     useEffect(() => {
         const loadTeams = async () => {
             const game = await new GameStateService().loadGameState();

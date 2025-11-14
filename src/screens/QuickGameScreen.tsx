@@ -4,10 +4,12 @@ import {useRoute} from '@react-navigation/native';
 import styled from 'styled-components/native';
 import {WordService} from '../logic/WordService';
 import {useNavigation} from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import StyledText from '../components/StyledText';
 import GameOverview from '../components/GameOverview';
 import ScreenContainer from '../components/ScreenContainer';
 import ListContainer from "../components/ListContainer";
+import CategoryCard from '../components/CategoryCard';
 
 
 const wordService = new WordService();
@@ -16,13 +18,13 @@ const Centered = styled.View`
     flex: 1;
     justify-content: center;
     align-items: center;
-    background-color: #f5e9da;
+    background-color: ${({ theme }) => theme.QuickGameScreenBackground};
 `;
 
 const Label = styled(StyledText)`
     font-size: 20px;
     margin-bottom: 8px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.QuickGameScreenLabelColor};
     text-align: center;
 `;
 
@@ -30,34 +32,24 @@ const Subheader = styled(StyledText)`
     font-size: 30px;
     margin-top: 24px;
     margin-bottom: 12px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.QuickGameScreenSubheaderColor};
     text-align: center;
 `;
 
-const CategoryCard = styled.TouchableOpacity<{ selected: boolean }>`
-    flex: 1;
-    margin: 8px;
-    padding: 18px 0;
-    background-color: ${props => (props.selected ? '#f7c873' : '#fff')};
-    border-width: 2px;
-    border-color: ${props => (props.selected ? '#fff' : '#f7c873')};
-    align-items: center;
-    shadow-color: #000;
-    shadow-opacity: 0.15;
-    shadow-radius: 8px;
-    shadow-offset: 0px 4px;
-    elevation: 4;
-    min-width: 0;
-`;
-
 const SelectAllButton = styled.TouchableOpacity<{ selected: boolean }>`
-    background-color: ${props => (props.selected ? '#f7c873' : '#fff')};
+    background-color: ${({ theme, selected }) =>
+            selected
+                    ? theme.QuickGameScreenSelectAllButtonSelectedBg
+                    : theme.QuickGameScreenSelectAllButtonUnselectedBg};
     padding: 12px 24px;
     border-width: 2px;
-    border-color: ${props => (props.selected ? '#fff' : '#f7c873')};
+    border-color: ${({ theme, selected }) =>
+            selected
+                    ? theme.QuickGameScreenSelectAllButtonSelectedBorder
+                    : theme.QuickGameScreenSelectAllButtonUnselectedBorder};
     align-self: center;
     margin-bottom: 12px;
-    shadow-color: #000;
+    shadow-color: ${({ theme }) => theme.QuickGameScreenSelectAllButtonShadow};
     shadow-opacity: 0.15;
     shadow-radius: 8px;
     shadow-offset: 0px 4px;
@@ -66,21 +58,30 @@ const SelectAllButton = styled.TouchableOpacity<{ selected: boolean }>`
 `;
 
 const SelectAllText = styled(StyledText)<{ selected: boolean }>`
-    color: ${props => (props.selected ? '#fff' : '#7c4a03')};
+    color: ${({ theme, selected }) =>
+            selected
+                    ? theme.QuickGameScreenSelectAllTextSelected
+                    : theme.QuickGameScreenSelectAllTextUnselected};
     font-size: 18px;
     font-weight: 600;
 `;
 
+type QuickGameParamList = {
+    SubmitPlayerNames: {
+        players: number;
+        teams: number;
+        words: number;
+        rounds: number;
+        selectedCategories: string[];
+        customWords: string[];
+    };
+};
 
-const CategoryText = styled(StyledText)<{ selected: boolean }>`
-    font-size: 18px;
-    color: ${props => (props.selected ? '#fff' : '#7c4a03')};
-`;
-
+type QuickGameScreenNavigationProp = StackNavigationProp<QuickGameParamList, 'SubmitPlayerNames'>;
 
 const QuickGameScreen = () => {
     const route = useRoute();
-    const navigation = useNavigation();
+    const navigation = useNavigation<QuickGameScreenNavigationProp>();
     const [categories, setCategories] = useState<string[]>([]);
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const isValid = selected.size > 0;
@@ -120,7 +121,7 @@ const QuickGameScreen = () => {
 
     const handleSubmit = () => {
         const selectedCategories = Array.from(selected);
-        navigation.navigate('SubmitPlayerNames', {
+        navigation.navigate('SubmitPlayerNamesScreen', {
             players,
             teams,
             words,
@@ -146,7 +147,8 @@ const QuickGameScreen = () => {
             showPrimaryButton
             primaryButtonDisabled={!isValid}
             primaryButtonText="Next: players"
-            onPrimaryButtonPress={handleSubmit}>
+            onPrimaryButtonPress={handleSubmit}
+        >
             <GameOverview players={players} teams={teams} words={words} rounds={rounds}/>
             <Subheader>{categories.length} available Categories:</Subheader>
             <SelectAllButton
@@ -157,33 +159,23 @@ const QuickGameScreen = () => {
                     {selected.size === categories.length ? 'Deselect All' : 'Select All'}
                 </SelectAllText>
             </SelectAllButton>
-            <ListContainer>
-                <FlatList
-                    data={categories}
-                    keyExtractor={item => item}
-                    numColumns={2}
-                    contentContainerStyle={{paddingHorizontal: 8, alignItems: 'stretch'}}
-                    renderItem={({item}) => (
+            <ListContainer
+                flatListProps={{
+                    data: categories,
+                    keyExtractor: item => item,
+                    numColumns: 2,
+                    contentContainerStyle: { paddingHorizontal: 8, alignItems: 'stretch' },
+                    renderItem: ({ item }) => (
                         <CategoryCard
                             selected={selected.has(item)}
                             onPress={() => toggleCategory(item)}
-                            activeOpacity={0.8}
                         >
-                            <CategoryText
-                                selected={selected.has(item)}
-                                numberOfLines={1}
-                                ellipsizeMode="tail"
-                                adjustsFontSizeToFit
-                                minimumFontScale={0.1}
-                                style={{maxWidth: '90%', textAlign: 'center'}}
-                            >
-                                {item}
-                            </CategoryText>
+                            {item}
                         </CategoryCard>
-                    )}
-                    style={{flexGrow: 0}}
-                />
-            </ListContainer>
+                    ),
+                    style: { flexGrow: 0 }
+                }}
+            />
         </ScreenContainer>
     );
 };

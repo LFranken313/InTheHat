@@ -3,15 +3,17 @@ import styled from 'styled-components/native';
 import StyledText from './StyledText';
 
 const Button = styled.TouchableOpacity`
-    background-color: #6fb8e6;
-    border-color: #fff;
+    background-color: ${({ theme }) => theme.primaryButtonBlue};
+    border-color: ${({ theme }) => theme.primaryButtonBorder};
     border-width: 2px;
     padding: 18px 0;
-    margin: 32px 16px 32px 16px;
     align-items: center;
+    margin-left: 16px;
+    margin-right: 16px;
+    margin-bottom: 12px;
 
     /* iOS shadow */
-    shadow-color: #000;
+    shadow-color: ${({ theme }) => theme.black};
     shadow-offset: 0px 4px;
     shadow-opacity: 0.25;
     shadow-radius: 4px;
@@ -21,8 +23,11 @@ const Button = styled.TouchableOpacity`
 `;
 
 const ButtonText = styled(StyledText)`
-    color: #fff;
+    color: ${({ theme }) => theme.primaryButtonBorder};
     font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
 `;
 
 type PrimaryButtonProps = {

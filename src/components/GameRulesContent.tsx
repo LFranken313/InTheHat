@@ -15,20 +15,20 @@ const Container = styled.View<{ padding: number }>`
 
 const TitleText = styled(StyledText)<{ fontSize: number }>`
     font-size: ${props => props.fontSize}px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.GameRulesTextColor};
     margin-bottom: 16px;
     text-align: center;
 `;
 
 const SectionTitle = styled(BoldText)<{ fontSize: number }>`
     font-size: ${props => props.fontSize}px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.GameRulesTextColor};
     margin-bottom: 4px;
 `;
 
 const SectionContent = styled(StyledText)<{ fontSize: number }>`
     font-size: ${props => props.fontSize}px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.GameRulesTextColor};
     margin-bottom: 20px;
 `;
 

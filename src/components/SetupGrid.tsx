@@ -16,7 +16,7 @@ const GridCell = styled.View`
 
 const GridLabel = styled(StyledText)`
     font-size: 32px;
-    color: #7c4a03;
+    color: ${({ theme }) => theme.SetupGridLabelColor};
     width: 120px;
     text-align: right;
     margin-right: 12px;
@@ -26,12 +26,13 @@ const GridInput = styled.TextInput`
     height: 48px;
     width: 80px;
     padding: 8px 12px;
-    background: #fff;
+    background: ${({ theme }) => theme.SetupGridInputBackground};
+    color: ${({ theme }) => theme.SetupGridInputColor};
     font-size: 20px;
     text-align: center;
     border-width: 2px;
-    border-color: #f7c873;
-    shadow-color: #000;
+    border-color: ${({ theme }) => theme.SetupGridInputBorder};
+    shadow-color: ${({ theme }) => theme.SetupGridInputShadow};
     shadow-opacity: 0.15;
     shadow-radius: 8px;
     shadow-offset: 0px 4px;
