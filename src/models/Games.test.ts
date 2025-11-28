@@ -14,6 +14,7 @@ describe('Game', () => {
     ])('createTeams creates %i teams with %i players', (numTeams, numPlayers) => {
         sut = new Game();
         addPlayers(sut, numPlayers);
+
         sut.createTeams(numTeams);
         sut.assignPlayersToTeams();
 
