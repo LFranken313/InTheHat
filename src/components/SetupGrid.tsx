@@ -3,7 +3,10 @@ import styled from 'styled-components/native';
 import StyledText from './StyledText';
 import {TextInput} from 'react-native';
 import Slider from '@react-native-community/slider';
+import textContent from '../textContent.json';
+import {useLanguage} from "../logic/LanguageContext";
 
+//region Styled components
 const Grid = styled.View`
     margin-bottom: 32px;
     align-items: center;
@@ -19,7 +22,7 @@ const GridCell = styled.View`
 const GridLabel = styled(StyledText)`
     font-size: 32px;
     color: ${({theme}) => theme.SetupGridLabelColor};
-    width: 120px;
+    width: 35%;
     text-align: right;
     margin-right: 12px;
 `;
@@ -32,6 +35,7 @@ const ValueInput = styled(TextInput)`
     margin-left: 12px;
     padding: 2px 6px;
 `;
+//endregion
 
 interface SetupGridProps {
     players: number;
@@ -49,21 +53,24 @@ function clamp(val: number, min: number, max: number) {
     return Math.max(min, Math.min(max, val));
 }
 
+
 export default function SetupGrid({
-                                      players,
-                                      teams,
-                                      words,
-                                      rounds,
-                                      setPlayers,
-                                      setTeams,
-                                      setWords,
-                                      setRounds,
-                                      inputsDisabled
-                                  }: SetupGridProps) {
+  players,
+  teams,
+  words,
+  rounds,
+  setPlayers,
+  setTeams,
+  setWords,
+  setRounds,
+  inputsDisabled
+}: SetupGridProps) {
+    const { language } = useLanguage();
+    const localizedText = textContent[language].setupScreen;
     return (
         <Grid>
             <GridCell>
-                <GridLabel>Players</GridLabel>
+                <GridLabel>{localizedText.playersLabel}</GridLabel>
                 <Slider
                     minimumValue={0}
                     maximumValue={20}
@@ -82,7 +89,7 @@ export default function SetupGrid({
                 />
             </GridCell>
             <GridCell>
-                <GridLabel>Teams</GridLabel>
+                <GridLabel>{localizedText.teamsLabel}</GridLabel>
                 <Slider
                     minimumValue={0}
                     maximumValue={10}
@@ -101,7 +108,7 @@ export default function SetupGrid({
                 />
             </GridCell>
             <GridCell>
-                <GridLabel>Words</GridLabel>
+                <GridLabel>{localizedText.wordsLabel}</GridLabel>
                 <Slider
                     minimumValue={0}
                     maximumValue={100}
@@ -122,7 +129,7 @@ export default function SetupGrid({
                 />
             </GridCell>
             <GridCell>
-                <GridLabel>Rounds</GridLabel>
+                <GridLabel>{localizedText.roundsLabel}</GridLabel>
                 <Slider
                     minimumValue={0}
                     maximumValue={5}

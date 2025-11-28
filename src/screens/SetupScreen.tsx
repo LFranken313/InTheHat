@@ -1,54 +1,25 @@
 import React, {useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {Modal} from 'react-native';
+import { Text } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
-import styled, {useTheme} from 'styled-components/native';
-import GameRulesModal from "../components/GameRulesModal";
+import styled from 'styled-components/native';
 import SetupGrid from "../components/SetupGrid";
+import textContent from '../textContent.json';
+import {useLanguage} from "../logic/LanguageContext";
+import ModalComponent from "../components/ModalComponent";
+import GameRulesContent from "../components/GameRulesContent";
+
 
 //region Styled components
-const ModalContent = styled.View`
-    background: ${({theme}) => theme.SetupModalBackground};
-    padding: 24px 20px;
-    border-radius: 12px;
-    border-width: 2px;
-    border-color: ${({theme}) => theme.SetupModalBorder};
-    align-items: center;
-    margin: 100px 32px;
-    elevation: 5;
-`;
 
 const ModalText = styled(StyledText)`
-    color: ${({theme}) => theme.SetupModalText};
-    font-size: 18px;
+    font-size: 22px;
+    color: ${({ theme }) => theme.MainScreenButtonLabel};
+    font-weight: 600;
+    letter-spacing: 1px;
     text-align: center;
-    margin-bottom: 16px;
-`;
-
-const buttonShadow = {
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
-};
-
-const CloseButton = styled.TouchableOpacity`
-    background: ${({theme}) => theme.SetupCloseButtonBackground};
-    padding: 10px 24px;
-    border-color: ${({theme}) => theme.SetupCloseButtonText};
-    border-width: 2px;
-    shadow-color: ${({theme}) => theme.SetupButtonShadowColor};
-    shadow-offset: 0px 4px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
-    elevation: 6;
-`;
-
-const CloseButtonText = styled(StyledText)`
-    color: ${({theme}) => theme.SetupCloseButtonText};
-    font-size: 16px;
+    width: 100%;
 `;
 
 const ContentWrapper = styled.View`
@@ -113,8 +84,6 @@ const RoundButtonRowLabel = styled(StyledText)`
 
 //endregion
 
-const WarningModal = styled(Modal)``;
-
 const SetupScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
@@ -128,6 +97,9 @@ const SetupScreen = () => {
     const [hasShownPlayerWarning, setHasShownPlayerWarning] = useState(false);
     const [hasShownWordWarning, setHasShownWordWarning] = useState(false);
     const [warningText, setwarningText] = useState('');
+    const { language } = useLanguage();
+    const localizedText = textContent[language].setupScreen;
+    const rulesModalText = textContent[language].rulesModal;
 
     const isFormValid = () => {
         if (!customGame) {
@@ -149,10 +121,10 @@ const SetupScreen = () => {
         setWords(n * 5);
     };
 
-    const handleInput = (setter: (n: number) => void) => (text: string) => {
-        const num = parseInt(text.replace(/[^0-9]/g, ''), 10);
-        setter(isNaN(num) ? 0 : num);
-    };
+    // const handleInput = (setter: (n: number) => void) => (text: string) => {
+    //     const num = parseInt(text.replace(/[^0-9]/g, ''), 10);
+    //     setter(isNaN(num) ? 0 : num);
+    // };
 
     const handleCloseWarning = () => {
         setShowWarning(false);
@@ -180,17 +152,17 @@ const SetupScreen = () => {
 
     return (
         <ScreenContainer
-            headerText="SETUP"
+            headerText={localizedText.title}
             showPrimaryButton
             onPrimaryButtonPress={handleSubmit}
-            primaryButtonText={"Next: words"}
+            primaryButtonText={localizedText.primaryButton}
             primaryButtonDisabled={!isFormValid()}
         >
             <ContentWrapper>
                 {!customGame && (
                     <>
                         <RoundButtonRowLabel>
-                            Quick presets:
+                            {localizedText.presetLabel}
                         </RoundButtonRowLabel>
                         <RoundButtonRow>
                             {[4, 6, 8, 10].map(num => (
@@ -212,7 +184,7 @@ const SetupScreen = () => {
                     words={words}
                     rounds={rounds}
                     inputsDisabled={!customGame}
-                    handleInput={handleInput}
+                    // handleInput={handleInput}
                     setPlayers={handleSetPlayers}
                     setTeams={setTeams}
                     setWords={setWords}
@@ -220,26 +192,32 @@ const SetupScreen = () => {
                 />
                 <InfoButtonContainer>
                     <InfoButton onPress={() => setShowInfo(true)}>
-                        <InfoButtonText>New? Read the rules.</InfoButtonText>
+                        <InfoButtonText>{localizedText.modalTitle}</InfoButtonText>
                     </InfoButton>
                 </InfoButtonContainer>
             </ContentWrapper>
-            <WarningModal
-                transparent
+            <ModalComponent
                 visible={showWarning}
-                animationType="fade"
-                onRequestClose={handleCloseWarning}
+                onClose={handleCloseWarning}
+                secondaryButton={{
+                    label: "OK",
+                    onPress: handleCloseWarning
+                }}
             >
-                <ModalContent>
-                    <ModalText>
-                        {warningText}
-                    </ModalText>
-                    <CloseButton onPress={handleCloseWarning}>
-                        <CloseButtonText>OK</CloseButtonText>
-                    </CloseButton>
-                </ModalContent>
-            </WarningModal>
-            <GameRulesModal visible={showInfo} onClose={() => setShowInfo(false)}/>
+                <ModalText>
+                    <Text>{warningText}</Text>
+                </ModalText>
+            </ModalComponent>
+            <ModalComponent
+                visible={showInfo}
+                onClose={() => setShowInfo(false)}
+                secondaryButton={{
+                    label: rulesModalText.modalButton,
+                    onPress: () => setShowInfo(false)
+                }}
+            >
+                <GameRulesContent onClose={() => setShowInfo(false)} />
+            </ModalComponent>
         </ScreenContainer>
     );
 };

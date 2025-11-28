@@ -6,7 +6,7 @@ import StyledText from '../components/StyledText';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import presetWords from '../assets/PresetWords.json';
-import FillRandomModal from "../components/FillRandomModal";
+import ModalComponent from '../components/ModalComponent';
 
 const screenWidth = Dimensions.get('window').width;
 const BUTTON_WIDTH = screenWidth * 0.38;
@@ -16,6 +16,14 @@ const MainContent = styled.ScrollView`
     width: 100%;
     max-height: 78%;
     flex-shrink: 0;
+`;
+
+const ModalText = styled(StyledText)`
+    font-size: 18px;
+    color: ${({theme}) => theme.ModalTextColor};
+    text-align: center;
+    font-weight: 600;
+    width: 100%;
 `;
 
 const Label = styled(StyledText)`
@@ -218,12 +226,22 @@ const SubmitWordsScreen = () => {
                     </FillRandomText>
                 </FillRandomButton>
             </BottomBar>
-            <FillRandomModal
+            <ModalComponent
                 visible={showFillRandomModal}
-                onRequestClose={() => setShowFillRandomModal(false)}
-                onConfirm={confirmFillRandom}
-                missing={requiredWords - hat.length}
-            />
+                onClose={() => setShowFillRandomModal(false)}
+                primaryButton={{
+                    label: "Confirm",
+                    onPress: confirmFillRandom
+                }}
+                secondaryButton={{
+                    label: "Cancel",
+                    onPress: () => setShowFillRandomModal(false)
+                }}
+            >
+                <ModalText style={{ textAlign: 'center', fontSize: 18 }}>
+                    {`Fill ${requiredWords - hat.length} missing words with random ones?`}
+                </ModalText>
+            </ModalComponent>
         </ScreenContainer>
     );
 }

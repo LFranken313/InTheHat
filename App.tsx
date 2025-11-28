@@ -5,8 +5,10 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {useFonts} from 'expo-font';
 import {FontProvider} from "./src/components/FontContext";
 import {ActivityIndicator, View} from 'react-native';
-import { ThemeProvider } from 'styled-components/native';
+import {ThemeProvider} from 'styled-components/native';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import {LanguageContext} from './src/logic/LanguageContext';
+
 
 import StartScreen from './src/screens/StartScreen';
 import SetupScreen from './src/screens/SetupScreen';
@@ -23,6 +25,7 @@ import {darkTheme, girlyTheme, mainTheme} from "./src/theme";
 
 const THEME_KEY = 'user_theme';
 const FONT_KEY = 'user_font';
+const LANGUAGE_KEY = 'user_language';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -32,6 +35,18 @@ export default function App() {
 
     const [themeMode, setThemeMode] = useState<'normal' | 'dark' | 'girly'>('normal');
     const [font, setFont] = useState<string | null>(null);
+    const [language, setLanguage] = useState('en');
+
+    useEffect(() => {
+        (async () => {
+            const savedLang = await AsyncStorage.getItem(LANGUAGE_KEY);
+            if (savedLang) setLanguage(savedLang);
+        })();
+    }, []);
+
+    useEffect(() => {
+        AsyncStorage.setItem(LANGUAGE_KEY, language);
+    }, [language]);
 
     useEffect(() => {
         (async () => {
@@ -76,30 +91,32 @@ export default function App() {
     return (
         <ThemeProvider theme={getTheme()}>
             <FontProvider font={font} setFont={setFont}>
-                <NavigationContainer>
-                    <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Start">
-                        <Stack.Screen name="Start" component={StartScreen}/>
-                        <Stack.Screen name="Setup" component={SetupScreen}/>
-                        <Stack.Screen name="QuickGameScreen" component={QuickGameScreen}/>
-                        <Stack.Screen name="SubmitPlayerNamesScreen" component={SubmitPlayerNamesScreen}/>
-                        <Stack.Screen name="GameScreen" component={GameScreen}/>
-                        <Stack.Screen name="PlayerTurnScreen" component={PlayerTurnScreen}/>
-                        <Stack.Screen name="RoundEndScreen" component={RoundEndScreen}/>
-                        <Stack.Screen name="GameEndScreen" component={GameEndScreen}/>
-                        <Stack.Screen name="SubmitWordsScreen" component={SubmitWordsScreen}/>
-                        <Stack.Screen name="TeamOverviewScreen" component={TeamOverviewScreen}/>
-                        <Stack.Screen
-                            name="SettingsScreen"
-                            children={props => (
-                                <SettingsScreen
-                                    {...props}
-                                    themeMode={themeMode}
-                                    setThemeMode={setThemeMode}
-                                />
-                            )}
-                        />
-                    </Stack.Navigator>
-                </NavigationContainer>
+                <LanguageContext.Provider value={{ language, setLanguage }}>
+                    <NavigationContainer>
+                        <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Start">
+                            <Stack.Screen name="Start" component={StartScreen}/>
+                            <Stack.Screen name="Setup" component={SetupScreen}/>
+                            <Stack.Screen name="QuickGameScreen" component={QuickGameScreen}/>
+                            <Stack.Screen name="SubmitPlayerNamesScreen" component={SubmitPlayerNamesScreen}/>
+                            <Stack.Screen name="GameScreen" component={GameScreen}/>
+                            <Stack.Screen name="PlayerTurnScreen" component={PlayerTurnScreen}/>
+                            <Stack.Screen name="RoundEndScreen" component={RoundEndScreen}/>
+                            <Stack.Screen name="GameEndScreen" component={GameEndScreen}/>
+                            <Stack.Screen name="SubmitWordsScreen" component={SubmitWordsScreen}/>
+                            <Stack.Screen name="TeamOverviewScreen" component={TeamOverviewScreen}/>
+                            <Stack.Screen
+                                name="SettingsScreen"
+                                children={props => (
+                                    <SettingsScreen
+                                        {...props}
+                                        themeMode={themeMode}
+                                        setThemeMode={setThemeMode}
+                                    />
+                                )}
+                            />
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                </LanguageContext.Provider>
             </FontProvider>
         </ThemeProvider>
     );

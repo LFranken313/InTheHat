@@ -7,6 +7,11 @@ import ScreenContainer from '../components/ScreenContainer';
 import StyledBold from '../components/StyledBold';
 import StyledText from '../components/StyledText';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ModalComponent from "../components/ModalComponent";
+import textContent from '../textContent.json';
+import { useLanguage } from '../logic/LanguageContext';
+import { Linking, TouchableOpacity } from 'react-native';
+
 
 //region Styled components
 const Banner = styled(StyledBold)`
@@ -71,6 +76,25 @@ const ButtonContainer = styled.View`
     margin-top: auto;
     padding-bottom: 10%;
 `;
+
+const CloseButton = styled.TouchableOpacity`
+    background: ${({theme}) => theme.SetupCloseButtonBackground};
+    padding: 10px 24px;
+    border-color: ${({theme}) => theme.SetupCloseButtonText};
+    border-width: 2px;
+    shadow-color: ${({theme}) => theme.SetupButtonShadowColor};
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+    elevation: 6;
+    align-self: center;
+    margin-top: 16px;
+`;
+
+const CloseButtonText = styled(StyledText)`
+    color: ${({theme}) => theme.SetupCloseButtonText};
+    font-size: 16px;
+`;
 //endregion
 
 const StartScreen = () => {
@@ -78,7 +102,8 @@ const StartScreen = () => {
     const navigation = useNavigation();
     const { height}  = useWindowDimensions();
     const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-
+    const { language } = useLanguage();
+    const localizedText = textContent[language].startScreen;
 
     useEffect(() => {
         const checkSavedGame = async () => {
@@ -106,6 +131,8 @@ const StartScreen = () => {
         navigation.navigate('Setup', { customGame });
     };
 
+
+
     return (
         <ScreenContainer>
             <Banner>In the{'\n'}hat!</Banner>
@@ -122,29 +149,38 @@ const StartScreen = () => {
             <ButtonContainer>
                 <ButtonRow>
                     <HalfButton onPress={() => handleStartPress(false)}>
-                        <ButtonLabel>Quick game</ButtonLabel>
+                        <ButtonLabel>{localizedText.quickGame}</ButtonLabel>
                     </HalfButton>
                     <HalfButton onPress={() => handleStartPress(true)}>
-                        <ButtonLabel>Custom game</ButtonLabel>
+                        <ButtonLabel>{localizedText.customGame}</ButtonLabel>
                     </HalfButton>
                 </ButtonRow>
                 {hasSavedGame && (
                     <StyledButton onPress={() => navigation.navigate('PlayerTurnScreen' as never)}>
-                        <ButtonLabel>Load last game</ButtonLabel>
+                        <ButtonLabel>{localizedText.loadButton}</ButtonLabel>
                     </StyledButton>
                 )}
                 <StyledButton onPress={() => navigation.navigate('SettingsScreen' as never)}>
-                    <ButtonLabel>Settings</ButtonLabel>
+                    <ButtonLabel>{localizedText.settingsButton}</ButtonLabel>
                 </StyledButton>
             </ButtonContainer>
-            <Modal visible={showWelcomeModal} transparent>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-                        <Text>Welcome to the game!</Text>
-                        <Button title="Close" onPress={handleModalClose} />
-                    </View>
-                </View>
-            </Modal>
+            <ModalComponent
+                visible={showWelcomeModal}
+                onClose={handleModalClose}
+                secondaryButton={{
+                    label: localizedText.modalButton,
+                    onPress: () => handleModalClose()
+                }}
+            >
+                <ButtonLabel>
+                    {localizedText.welcomeModal}
+                    <TouchableOpacity onPress={() => Linking.openURL('mailto:ContainerKwark@Gmail.com')}>
+                        <ButtonLabel style={{ color: '#007AFF', textDecorationLine: 'underline'}}>
+                            ContainerKwark@Gmail.com
+                        </ButtonLabel>
+                    </TouchableOpacity>
+                </ButtonLabel>
+            </ModalComponent>
         </ScreenContainer>
     );
 };

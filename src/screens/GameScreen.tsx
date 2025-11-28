@@ -10,6 +10,8 @@ import ScreenContainer from '../components/ScreenContainer';
 import GameTopBar from "../components/GameTopBar";
 import GameExitModal from "../components/GameExitModal";
 import {StackNavigationProp} from "@react-navigation/stack";
+import textContent from '../textContent.json';
+import {useLanguage} from "../logic/LanguageContext";
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -106,7 +108,7 @@ const FullscreenOverlay = styled.TouchableOpacity`
 
 const GameScreen = () => {
     const [roundEnded, setRoundEnded] = useState(false);
-    const [timer, setTimer] = useState(3);
+    const [timer, setTimer] = useState(60);
     const [currentWord, setCurrentWord] = useState<string>('');
     const [streak, setStreak] = useState<number>(0);
     const [isTimeUp, setIsTimeUp] = useState(false);
@@ -120,6 +122,9 @@ const GameScreen = () => {
     const playerName = route.params?.playerName;
     const customGame = route.params?.customGame;
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const { language } = useLanguage();
+    const localizedText = textContent[language].gameScreen;
+
 
     type GameScreenRouteParams = {
         playerName: string;
@@ -166,7 +171,7 @@ const GameScreen = () => {
         const loadGame = async () => {
             setStreak(0);
             setIsTimeUp(false);
-            let initialTimer = 3;
+            let initialTimer = 60;
             const loadedGame = await gameService.continueGame();
             gameRef.current = loadedGame;
             if (
@@ -189,7 +194,7 @@ const GameScreen = () => {
                 setCurrentWord(word.name);
                 setPaused(false);
             } catch {
-                setCurrentWord('Round has ended!');
+                setCurrentWord(localizedText.roundEnded);
                 setPaused(true);
                 await checkGameEnd();
             }
@@ -214,7 +219,7 @@ const GameScreen = () => {
             setCurrentWord(nextWord.name);
             setPaused(false);
         } catch {
-            setCurrentWord('Round has ended!');
+            setCurrentWord(localizedText.roundEnded);
             setPaused(true);
             await checkGameEnd();
         }
@@ -254,8 +259,8 @@ const GameScreen = () => {
     };
 
     const getWordDisplay = () => {
-        if (isTimeUp) return "Time's up!";
-        if (roundEnded) return "Round has ended!";
+        if (isTimeUp) return localizedText.timeUp;
+        if (roundEnded) return localizedText.roundEnd;
         if (showExitModal) return " ";
         return currentWord.toUpperCase();
     };
@@ -274,7 +279,7 @@ const GameScreen = () => {
     return (
         <ScreenContainer
             showPrimaryButton
-            primaryButtonText="Guessed"
+            primaryButtonText={localizedText.guessedButton}
             onPrimaryButtonPress={handleGuessed}
             primaryButtonDisabled={isTimeUp || showExitModal || paused}
         >
@@ -298,14 +303,14 @@ const GameScreen = () => {
                     </CardTextOverlay>
                 </CardImageContainer>
 
-                <CurrentStreak>Streak: {streak}</CurrentStreak>
+                <CurrentStreak>{localizedText.streak} {streak}</CurrentStreak>
                 <CardsLeftText>
-                    {gameRef.current?.wordsLeftInTheHat?.length ?? 0} / {gameRef.current?.words?.length ?? 0} cards left
-                    in the hat
+                    {gameRef.current?.wordsLeftInTheHat?.length ?? 0} / {gameRef.current?.words?.length ?? 0}
+                    {localizedText.cardsLeft}
                 </CardsLeftText>
 
                 {(isTimeUp || roundEnded) && (
-                    <HintText>Touch anywhere to continue</HintText>
+                    <HintText>{localizedText.touchToContinue}</HintText>
                 )}
             </Container>
             {isTimeUp && !showExitModal && (

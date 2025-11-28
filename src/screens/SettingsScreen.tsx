@@ -4,11 +4,16 @@ import styled from 'styled-components/native';
 import {Picker} from '@react-native-picker/picker';
 import {useFont} from '../components/FontContext';
 import ScreenContainer from '../components/ScreenContainer';
-import GameRulesModal from "../components/GameRulesModal";
 import StyledText from "../components/StyledText";
-import {View, ScrollView} from 'react-native';
+import {View} from 'react-native';
 import SettingsSection from "../components/SettingsSection";
+import ModalComponent from "../components/ModalComponent";
+import GameRulesContent from "../components/GameRulesContent";
+import textContent from '../textContent.json';
+import {useLanguage} from "../logic/LanguageContext";
 
+
+//region Styled components
 const Container = styled.View`
     flex: 1;
     align-items: center;
@@ -28,6 +33,14 @@ const StyledScrollView = styled.ScrollView.attrs(() => ({
     border-color: ${({theme}) => theme.SetupModalBorder};
     border-radius: 12px;
     background-color: ${({theme}) => theme.SetupModalBackground};
+    /* iOS shadow */
+    shadow-color: ${({ theme }) => theme.black};
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+
+    /* Android shadow */
+    elevation: 6;
 `;
 
 const AddCategoriesButtonText = styled(StyledText)`
@@ -94,13 +107,20 @@ const InfoButton = styled.TouchableOpacity`
     min-height: 56px;
     border-width: 2px;
     border-color: ${({theme}) => theme.SetupInfoButtonBorder};
-    shadow-color: ${({theme}) => theme.SetupButtonShadowColor};
     margin-top: 16px;
     margin-bottom: 16px;
     align-items: center;
     justify-content: center;
     align-self: center;
     width: 70%;
+    /* iOS shadow */
+    shadow-color: ${({ theme }) => theme.black};
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+
+    /* Android shadow */
+    elevation: 6;
 `;
 
 const ThemeRow = styled.View`
@@ -123,6 +143,7 @@ const ThemeButton = styled.TouchableOpacity`
     margin-horizontal: 8px;
     position: relative;
 `;
+//endregion
 
 type SettingsScreenProps = {
     themeMode: 'normal' | 'dark' | 'girly';
@@ -192,6 +213,9 @@ function QuadSolid({colors}: { colors: string[] }) {
 export default function SettingsScreen({themeMode, setThemeMode, navigation}: SettingsScreenProps) {
     const {font, setFont} = useFont();
     const [showInfo, setShowInfo] = useState(false);
+    const { language, setLanguage } = useLanguage();
+    const rulesModalText = textContent[language].rulesModal;
+    const localizedText = textContent[language].settingsScreen;
 
     const handleThemeChange = async (mode: 'normal' | 'dark' | 'girly') => {
         setThemeMode(mode);
@@ -203,23 +227,37 @@ export default function SettingsScreen({themeMode, setThemeMode, navigation}: Se
         await AsyncStorage.setItem(FONT_KEY, fontValue);
     };
 
+    const handleLanguageChange = async (lang: string) => {
+        setLanguage(lang);
+        await AsyncStorage.setItem('user_language', lang);
+    };
+
     return (
         <ScreenContainer
             showPrimaryButton={true}
-            primaryButtonText={"Save"}
+            primaryButtonText={localizedText.saveButton}
             onPrimaryButtonPress={() => navigation.goBack()}
-            headerText="SETTINGS">
+            headerText={localizedText.title}>
             <InfoButton onPress={() => setShowInfo(true)}>
                 <InfoButtonText numberOfLines={1} ellipsizeMode="tail">
-                    Need some help?
+                    {localizedText.helpButton}
                 </InfoButtonText>
             </InfoButton>
-            <GameRulesModal visible={showInfo} onClose={() => setShowInfo(false)}/>
+            <ModalComponent
+                visible={showInfo}
+                onClose={() => setShowInfo(false)}
+                secondaryButton={{
+                    label: rulesModalText.modalButton,
+                    onPress: () => setShowInfo(false)
+                }}
+            >
+                <GameRulesContent onClose={() => setShowInfo(false)} />
+            </ModalComponent>
             <StyledScrollView
                 contentContainerStyle={{flexGrow: 1, alignItems: 'center', justifyContent: 'center', width: '100%'}}>
                 <Container>
-                    <SettingsSection header="Theme">
-                        <PickerText>Select Theme:</PickerText>
+                    <SettingsSection header={localizedText.themeTitle}>
+                        <PickerText>{localizedText.themeOptions}</PickerText>
                         <ThemeRow>
                             {themeOptions.map(opt => (
                                 <ThemeButton
@@ -232,8 +270,8 @@ export default function SettingsScreen({themeMode, setThemeMode, navigation}: Se
                             ))}
                         </ThemeRow>
                     </SettingsSection>
-                    <SettingsSection header="Font">
-                        <PickerText>Select Font:</PickerText>
+                    <SettingsSection header={localizedText.fontTitle}>
+                        <PickerText>{localizedText.fontOptions}</PickerText>
                         <PickerWrapper>
                             <StyledPicker
                                 selectedValue={font}
@@ -245,23 +283,22 @@ export default function SettingsScreen({themeMode, setThemeMode, navigation}: Se
                             </StyledPicker>
                         </PickerWrapper>
                     </SettingsSection>
-                    <SettingsSection header="Language">
-                        <PickerText>Select Language:</PickerText>
+                    <SettingsSection header={localizedText.languageTitle}>
+                        <PickerText>{localizedText.languageOptions}</PickerText>
                         <PickerWrapper>
                             <StyledPicker
-                                selectedValue="comingSoon"
-                                onValueChange={() => {}}
+                                selectedValue={language}
+                                onValueChange={(value) => handleLanguageChange(value)}
                             >
-                                <Picker.Item label="Coming soon" value="comingSoon" />
-                                <Picker.Item label="Nederlands" value="dutch" />
-                                <Picker.Item label="English" value="english" />
-                                <Picker.Item label="ไทย" value="thai" />
+                                <Picker.Item label="Nederlands" value="nl" />
+                                <Picker.Item label="English" value="en" />
+                                <Picker.Item label="ไทย" value="th" />
                             </StyledPicker>
                         </PickerWrapper>
                     </SettingsSection>
                 </Container>
             </StyledScrollView>
-            <AddCategoriesButton onPress={() => navigation.navigate('AddCategoriesScreen')}>
+            <AddCategoriesButton onPress={() => console.log("No")}>
                 <AddCategoriesButtonText>Add Categories (Coming soon)</AddCategoriesButtonText>
             </AddCategoriesButton>
         </ScreenContainer>

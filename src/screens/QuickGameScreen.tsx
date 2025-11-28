@@ -10,10 +10,12 @@ import GameOverview from '../components/GameOverview';
 import ScreenContainer from '../components/ScreenContainer';
 import ListContainer from "../components/ListContainer";
 import CategoryCard from '../components/CategoryCard';
-
+import textContent from '../textContent.json';
+import {useLanguage} from "../logic/LanguageContext";
 
 const wordService = new WordService();
 
+//region Styled components
 const Centered = styled.View`
     flex: 1;
     justify-content: center;
@@ -57,28 +59,7 @@ const SelectAllButton = styled.TouchableOpacity<{ selected: boolean }>`
     min-width: 0;
     width: 40%;
 `;
-
-const RoundButtonRow = styled.View`
-    flex-direction: row;
-    justify-content: center;
-    margin-bottom: 16px;
-`;
-
-const RoundButton = styled.TouchableOpacity<{ selected: boolean }>`
-    background: ${({ theme, selected }) => selected ? theme.SetupButtonQuickGameBackground : theme.SetupButtonBackground};
-    border-width: 2px;
-    border-color: ${({ theme }) => theme.SetupButtonBorder};
-    padding: 10px 18px;
-    margin: 0 8px;
-    border-radius: 8px;
-    opacity: ${({ selected }) => selected ? 1 : 0.7};
-`;
-
-const RoundButtonText = styled(StyledText)<{ selected: boolean }>`
-    color: ${({ theme, selected }) => selected ? theme.SetupButtonText : theme.SetupButtonText};
-    font-size: 18px;
-    font-weight: ${({ selected }) => selected ? 'bold' : 'normal'};
-`;
+//endregion
 
 const SelectAllText = styled(StyledText)<{ selected: boolean }>`
     color: ${({ theme, selected }) =>
@@ -111,6 +92,8 @@ const QuickGameScreen = () => {
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const isValid = selected.size > 0;
     const [loading, setLoading] = useState(true);
+    const { language } = useLanguage();
+    const localizedText = textContent[language].quickGameScreen;
 
     const {players, teams, words, rounds, customGame} = route.params as {
         players: number;
@@ -163,28 +146,28 @@ const QuickGameScreen = () => {
         return (
             <Centered>
                 <ActivityIndicator size="large" color="#6fb8e6"/>
-                <Label>Loading categories...</Label>
+                <Label>{localizedText.loadingCategories}</Label>
             </Centered>
         );
     }
 
     return (
         <ScreenContainer
-            headerText="Quick Game Setup"
+            headerText={localizedText.title}
             headerLines={2}
             showPrimaryButton
             primaryButtonDisabled={!isValid}
-            primaryButtonText="Next: players"
+            primaryButtonText={localizedText.primaryButtonText}
             onPrimaryButtonPress={handleSubmit}
         >
             <GameOverview players={players} teams={teams} words={words} rounds={rounds}/>
-            <Subheader>{categories.length} available Categories:</Subheader>
+            <Subheader>{categories.length} {localizedText.subheader}</Subheader>
             <SelectAllButton
                 onPress={handleSelectAll}
                 selected={selected.size === categories.length}
             >
                 <SelectAllText selected={selected.size === categories.length}>
-                    {selected.size === categories.length ? 'Deselect All' : 'Select All'}
+                    {selected.size === categories.length ? localizedText.deselectAll : localizedText.selectAll}
                 </SelectAllText>
             </SelectAllButton>
             <ListContainer
