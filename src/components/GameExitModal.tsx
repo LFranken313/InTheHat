@@ -26,6 +26,8 @@ const ModalText = styled(StyledText)`
     color: ${({theme}) => theme.ModalTextColor};
     text-align: center;
     margin-bottom: 24px;
+    font-weight: 600;
+    width: 100%;
 `;
 
 const ExitButton = styled.TouchableOpacity`
@@ -38,6 +40,10 @@ const ExitButton = styled.TouchableOpacity`
 const ExitButtonText = styled(StyledText)`
     color: ${({theme}) => theme.ModalButtonTextColor};
     font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+    width: 100%;
 `;
 
 const CancelButton = styled.TouchableOpacity`
@@ -51,6 +57,10 @@ const CancelButton = styled.TouchableOpacity`
 const CancelButtonText = styled(StyledText)`
     color: ${({theme}) => theme.ModalCancelButtonTextColor};
     font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+    width: 100%;
 `;
 
 const buttonShadow = (theme: any) => ({

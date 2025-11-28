@@ -47,7 +47,10 @@ const TeamScore = styled(StyledText)`
     color: ${({theme}) => theme.RoundEndTeamScoreColor};
     flex: none;
     min-width: 0;
-    text-align: right;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 1px;
+    width: 10%;
 `;
 
 const TeamsScroll = styled(ScrollView)`

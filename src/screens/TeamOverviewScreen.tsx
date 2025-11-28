@@ -5,8 +5,9 @@ import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import {GameStateService} from '../logic/GameStateService';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
+//region Styled components
 const windowHeight = Dimensions.get('window').height;
 const maxScrollHeight = Math.min(windowHeight * 0.70);
 
@@ -64,10 +65,13 @@ type TeamOverviewScreenNavigationProp = StackNavigationProp<
     'TeamOverviewScreen'
 >;
 
+//endregion
 
 export default function TeamOverviewScreen() {
     const [teams, setTeams] = useState<{ name: string; players: { name: string }[] }[]>([]);
     const navigation = useNavigation<TeamOverviewScreenNavigationProp>();
+    const route = useRoute();
+    const customGame = route.params as { customGame: boolean };
     useEffect(() => {
         const loadTeams = async () => {
             const game = await new GameStateService().loadGameState();
@@ -76,12 +80,17 @@ export default function TeamOverviewScreen() {
         loadTeams();
     }, []);
 
+    const handleSubmit = () => {
+        navigation.navigate('PlayerTurnScreen', customGame);
+    }
+
+    //region Html
     return (
         <ScreenContainer
             headerText="Your Teams"
             showPrimaryButton
             primaryButtonText="Next: Start Game"
-            onPrimaryButtonPress={() => navigation.navigate('PlayerTurnScreen')}
+            onPrimaryButtonPress={handleSubmit}
         >
             <TeamsScroll>
                 {teams.map((team, idx) => (
@@ -97,4 +106,5 @@ export default function TeamOverviewScreen() {
             </TeamsScroll>
         </ScreenContainer>
     );
+    //endregion
 }

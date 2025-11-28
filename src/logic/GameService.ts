@@ -1,7 +1,6 @@
 import {Game} from '../models/Game';
 import {Player} from '../models/Player';
 import {Word} from '../models/Word';
-import {Team} from '../models/Team';
 import {GameStateService} from './GameStateService';
 import {WordService} from './WordService';
 import {GameFactory} from '../models/GameFactory';
@@ -90,15 +89,20 @@ export class GameService {
         this.game.advanceRound();
         this.initializeWordsInTheHat();
         if (this.game.carryOverPlayerName && this.game.carryOverTime) {
-            const idx = this.game.turnOrder.findIndex(p => p.name === this.game.carryOverPlayerName);
+            const flatTurnOrder = this.game.turnOrder.flat();
+            const idx = flatTurnOrder.findIndex(p => p.name === this.game.carryOverPlayerName);
             if (idx > -1) {
-                const [player] = this.game.turnOrder.splice(idx, 1);
-                this.game.turnOrder.unshift(player);
+                const [player] = flatTurnOrder.splice(idx, 1);
+                this.game.turnOrder = [
+                    [player],
+                    ...this.game.turnOrder.map(arr => arr.filter(p => p.name !== this.game.carryOverPlayerName))
+                ];
             }
         }
         await this.gameStateService.saveGameState(this.game);
         return this.game;
     }
+
 
     private initializeWordsInTheHat(): void {
         if (!this.game) throw new Error('No game loaded');

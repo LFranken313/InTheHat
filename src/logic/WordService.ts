@@ -1,8 +1,10 @@
 import * as FileSystem from 'expo-file-system';
 import {Word} from '../models/Word';
 
-const CUSTOM_WORDS_PATH = FileSystem.documentDirectory + 'custom_words.json';
-const STATIC_WORDS: Word[] = require('../assets/PresetWords.json');
+const CUSTOM_WORDS_PATH =
+    (FileSystem as any).documentDirectory
+        ? (FileSystem as any).documentDirectory + 'custom_words.json'
+        : './custom_words.json';const STATIC_WORDS: Word[] = require('../assets/PresetWords.json');
 
 export class WordService {
     private words: Word[];

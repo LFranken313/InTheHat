@@ -7,7 +7,7 @@ export class Game {
     words: Word[] = [];
     players: Player[] = [];
     teams: Team[] = [];
-    turnOrder: Player[] = [];
+    turnOrder: Player[][] = [];
     wordsLeftInTheHat: Word[] = [];
     currentRound: number = 0;
     numberOfRoundsToPlay: number = 3;
@@ -35,7 +35,7 @@ export class Game {
     }
 
     initializeTurnOrder(): void {
-        this.turnOrder = [...this.players];
+        this.turnOrder = this.teams.map(team => team.players.map(player => player));
     }
 
     initializeWordsInTheHat(): void {
@@ -52,9 +52,22 @@ export class Game {
 
     nextPlayer(): Player {
         if (this.turnOrder.length === 0) {
-            this.turnOrder = [...this.players];
+            this.initializeTurnOrder();
         }
-        const player = this.turnOrder.shift()!;
+
+        const teamPlayers = this.turnOrder.shift()!;
+        const player = teamPlayers.shift()!;
+
+        if (teamPlayers.length === 0) {
+            const teamIndex = this.teams.findIndex(team =>
+                team.players.some(player => player === player)
+            );
+            if (teamIndex !== -1) {
+                this.turnOrder.push(this.teams[teamIndex].players.map(p => p));
+            }
+        } else {
+            this.turnOrder.push(teamPlayers);
+        }
         return player;
     }
 

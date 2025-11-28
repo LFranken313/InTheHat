@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {GameStateService} from '../logic/GameStateService';
 import {GameService} from '../logic/GameService';
 import {WordService} from '../logic/WordService';
@@ -16,6 +16,17 @@ const gameStateService = new GameStateService();
 const wordService = new WordService();
 const gameService = new GameService(gameStateService, wordService);
 
+//region Styled components
+
+const LargeInstructions = styled(StyledBold)`
+    font-size: 32px;
+    color: ${({ theme }) => theme.ModalTextColor};
+    text-align: center;
+    margin-top: 16px;
+    margin-bottom: 24px;
+    width: 100%;
+`;
+
 const Centered = styled.View`
     flex: 1;
     justify-content: center;
@@ -25,8 +36,9 @@ const Centered = styled.View`
 const TeamName = styled(StyledBold)`
     color: ${({ theme }) => theme.PlayerTurnTeamNameColor};
     font-size: 38px;
+    font-weight: 600;
     text-align: center;
-    margin-bottom: 16px;
+    width: 100%;    margin-bottom: 16px;
     text-shadow-color: ${({ theme }) => theme.TeamShadowColor};
     text-shadow-offset: 1px 2px;
     text-shadow-radius: 4px;
@@ -35,7 +47,6 @@ const TeamName = styled(StyledBold)`
 const PlayerName = styled(StyledBold)`
     color: ${({ theme }) => theme.PlayerTurnPlayerNameColor};
     font-size: 96px;
-    text-align: center;
     text-shadow-color: ${({ theme }) => theme.PlayerTurnPlayerNameShadow};
     text-shadow-offset: 3px 3px;
     text-shadow-radius: 6px;
@@ -43,13 +54,18 @@ const PlayerName = styled(StyledBold)`
     letter-spacing: 3px;
     max-width: 90%;
     align-self: center;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
 `;
 
 const ReadyText = styled(StyledText)`
     font-size: 22px;
     color: ${({ theme }) => theme.PlayerTurnReadyTextColor};
     margin-bottom: 32px;
+    font-weight: 600;
     text-align: center;
+    width: 100%;
 `;
 
 const TimeLeftText = styled(StyledText)`
@@ -59,16 +75,22 @@ const TimeLeftText = styled(StyledText)`
     text-align: center;
 `;
 
+//endregion
+
 type RootStackParamList = {
     PlayerTurnScreen: undefined;
-    GameScreen: { playerName: string | null };
+    GameScreen: { playerName: string | null, customGame: boolean };
 }
+
 
 const PlayerTurnScreen = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [currentPlayerName, setCurrentPlayerName] = useState<string | null>(null);
     const [currentTeamName, setCurrentTeamName] = useState<string | null>(null);
     const [carryOverTime, setCarryOverTime] = useState<number | null>(null);
+    const route = useRoute();
+    const customGame = route.params as { customGame: boolean };
+    const [currentRound, setCurrentRound] = useState<number>();
 
     useEffect(() => {
         return navigation.addListener('beforeRemove', (e: EventArg<'beforeRemove', false, any>) => {
@@ -95,12 +117,26 @@ const PlayerTurnScreen = () => {
                 t.players.some((p: any) => p.name === playerName)
             );
             setCurrentTeamName(team ? team.name : null);
+            setCurrentRound(game.currentRound);
         };
         loadGame();
     }, []);
 
     const handleGo = () => {
-        navigation.navigate('GameScreen', { playerName: currentPlayerName });
+        navigation.navigate('GameScreen', { playerName: currentPlayerName, customGame: customGame });
+    };
+
+    const getInstructions = () => {
+        switch (currentRound) {
+            case 1:
+                return "Forbidden word. Describe the word without saying it!";
+            case 2:
+                return "Act it out, no words!";
+            case 3:
+                return "Use only one word!";
+            default:
+                return "Get ready to play!";
+        }
     };
 
     return (
@@ -111,17 +147,17 @@ const PlayerTurnScreen = () => {
             onPrimaryButtonPress={handleGo}
         >
             <Centered>
-                {carryOverTime != null && (
-                    <TimeLeftText>
-                        Time left: {carryOverTime}s
-                    </TimeLeftText>
+                {!customGame && (
+                    <LargeInstructions>
+                        {getInstructions()}
+                    </LargeInstructions>
                 )}
                 {currentPlayerName && currentTeamName && (
                     <>
                         <ReadyText>Are you ready</ReadyText>
-                        <TeamName>{currentTeamName}'s</TeamName>
+                        {/*<TeamName>{currentTeamName}'s</TeamName>*/}
                         <PlayerName
-                            numberOfLines={2}
+                            numberOfLines={1}
                             adjustsFontSizeToFit
                             minimumFontScale={0.3}
                         >

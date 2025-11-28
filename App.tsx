@@ -48,7 +48,6 @@ export default function App() {
 
     useEffect(() => {
         AsyncStorage.setItem(THEME_KEY, themeMode);
-
     }, [themeMode]);
 
     const getTheme = () => {

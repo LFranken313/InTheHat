@@ -55,6 +55,29 @@ const SelectAllButton = styled.TouchableOpacity<{ selected: boolean }>`
     shadow-offset: 0px 4px;
     elevation: 4;
     min-width: 0;
+    width: 40%;
+`;
+
+const RoundButtonRow = styled.View`
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 16px;
+`;
+
+const RoundButton = styled.TouchableOpacity<{ selected: boolean }>`
+    background: ${({ theme, selected }) => selected ? theme.SetupButtonQuickGameBackground : theme.SetupButtonBackground};
+    border-width: 2px;
+    border-color: ${({ theme }) => theme.SetupButtonBorder};
+    padding: 10px 18px;
+    margin: 0 8px;
+    border-radius: 8px;
+    opacity: ${({ selected }) => selected ? 1 : 0.7};
+`;
+
+const RoundButtonText = styled(StyledText)<{ selected: boolean }>`
+    color: ${({ theme, selected }) => selected ? theme.SetupButtonText : theme.SetupButtonText};
+    font-size: 18px;
+    font-weight: ${({ selected }) => selected ? 'bold' : 'normal'};
 `;
 
 const SelectAllText = styled(StyledText)<{ selected: boolean }>`
@@ -64,6 +87,8 @@ const SelectAllText = styled(StyledText)<{ selected: boolean }>`
                     : theme.QuickGameScreenSelectAllTextUnselected};
     font-size: 18px;
     font-weight: 600;
+    text-align: center;
+    width: 100%;
 `;
 
 type QuickGameParamList = {
@@ -87,12 +112,14 @@ const QuickGameScreen = () => {
     const isValid = selected.size > 0;
     const [loading, setLoading] = useState(true);
 
-    const {players, teams, words, rounds} = route.params as {
+    const {players, teams, words, rounds, customGame} = route.params as {
         players: number;
         teams: number;
         words: number;
         rounds: number;
+        customGame: boolean;
     };
+
 
     const handleSelectAll = () => {
         if (selected.size === categories.length) {
@@ -128,6 +155,7 @@ const QuickGameScreen = () => {
             rounds,
             selectedCategories,
             customWords: [],
+            customGame
         });
     };
 

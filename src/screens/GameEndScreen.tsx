@@ -40,7 +40,9 @@ const TeamScore = styled(StyledText)<{ fontSize: number }>`
     font-size: ${({fontSize}) => fontSize}px;
     flex: none;
     min-width: 0;
-    text-align: right;
+    text-align: center;
+    font-weight: 600;
+    width: 15%;
 `;
 
 const SubBanner = styled(StyledText)<{ color?: string }>`

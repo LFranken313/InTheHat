@@ -21,6 +21,9 @@ const Card = styled.TouchableOpacity<{ selected: boolean }>`
 const CategoryText = styled(StyledText)<{ selected: boolean }>`
     font-size: 18px;
     color: ${({ theme, selected }) => selected ? theme.CategoryCardBackground : theme.CategoryCardText};
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
 `;
 
 type CategoryCardProps = {

@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import StyledText from './StyledText';
+import {TextInput} from 'react-native';
+import Slider from '@react-native-community/slider';
 
 const Grid = styled.View`
     margin-bottom: 32px;
@@ -16,94 +18,128 @@ const GridCell = styled.View`
 
 const GridLabel = styled(StyledText)`
     font-size: 32px;
-    color: ${({ theme }) => theme.SetupGridLabelColor};
+    color: ${({theme}) => theme.SetupGridLabelColor};
     width: 120px;
     text-align: right;
     margin-right: 12px;
 `;
 
-const GridInput = styled.TextInput`
-    height: 48px;
-    width: 80px;
-    padding: 8px 12px;
-    background: ${({ theme }) => theme.SetupGridInputBackground};
-    color: ${({ theme }) => theme.SetupGridInputColor};
+const ValueInput = styled(TextInput)`
     font-size: 20px;
-    text-align: center;
-    border-width: 2px;
-    border-color: ${({ theme }) => theme.SetupGridInputBorder};
-    shadow-color: ${({ theme }) => theme.SetupGridInputShadow};
-    shadow-opacity: 0.15;
-    shadow-radius: 8px;
-    shadow-offset: 0px 4px;
-    elevation: 4;
+    color: ${({theme}) => theme.SetupGridInputColor};
+    width: 70px;
+    text-align: left;
+    margin-left: 12px;
+    padding: 2px 6px;
 `;
-
 
 interface SetupGridProps {
     players: number;
     teams: number;
     words: number;
     rounds: number;
-    handleInput: (setter: (n: number) => void) => (text: string) => void;
+    inputsDisabled?: boolean;
     setPlayers: (n: number) => void;
     setTeams: (n: number) => void;
     setWords: (n: number) => void;
     setRounds: (n: number) => void;
 }
 
+function clamp(val: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, val));
+}
+
 export default function SetupGrid({
-    players,
-    teams,
-    words,
-    rounds,
-    handleInput,
-    setPlayers,
-    setTeams,
-    setWords,
-    setRounds,
-}: SetupGridProps) {
+                                      players,
+                                      teams,
+                                      words,
+                                      rounds,
+                                      setPlayers,
+                                      setTeams,
+                                      setWords,
+                                      setRounds,
+                                      inputsDisabled
+                                  }: SetupGridProps) {
     return (
         <Grid>
             <GridCell>
                 <GridLabel>Players</GridLabel>
-                <GridInput
-                    keyboardType="numeric"
+                <Slider
+                    minimumValue={0}
+                    maximumValue={20}
+                    step={1}
+                    value={players}
+                    onValueChange={n => setPlayers(clamp(n, 0, 20))}
+                    style={{width: 120}}
+                />
+                <ValueInput
                     value={String(players)}
-                    onChangeText={handleInput(setPlayers)}
-                    placeholder="0"
-                    onFocus={() => setPlayers('')}
-                    maxLength={2}
+                    keyboardType="numeric"
+                    onChangeText={text => {
+                        const num = clamp(parseInt(text.replace(/[^0-9]/g, ''), 10) || 0, 0, 20);
+                        setPlayers(num);
+                    }}
                 />
             </GridCell>
             <GridCell>
                 <GridLabel>Teams</GridLabel>
-                <GridInput
-                    keyboardType="numeric"
+                <Slider
+                    minimumValue={0}
+                    maximumValue={10}
+                    step={1}
+                    value={teams}
+                    onValueChange={n => setTeams(clamp(n, 0, 20))}
+                    style={{width: 120}}
+                />
+                <ValueInput
                     value={String(teams)}
-                    onChangeText={handleInput(setTeams)}
-                    placeholder="0"
-                    onFocus={() => setTeams('')}
-                    maxLength={2}
+                    keyboardType="numeric"
+                    onChangeText={text => {
+                        const num = clamp(parseInt(text.replace(/[^0-9]/g, ''), 10) || 0, 0, 20);
+                        setTeams(num);
+                    }}
                 />
             </GridCell>
             <GridCell>
                 <GridLabel>Words</GridLabel>
-                <GridInput
-                    keyboardType="numeric"
+                <Slider
+                    minimumValue={0}
+                    maximumValue={100}
+                    step={1}
+                    value={words}
+                    onValueChange={n => setWords(clamp(n, 0, 20))}
+                    disabled={!!inputsDisabled}
+                    style={{width: 120}}
+                />
+                <ValueInput
                     value={String(words)}
-                    onChangeText={handleInput(setWords)}
-                    maxLength={2}
+                    keyboardType="numeric"
+                    editable={!inputsDisabled}
+                    onChangeText={text => {
+                        const num = clamp(parseInt(text.replace(/[^0-9]/g, ''), 10) || 0, 0, 20);
+                        setWords(num);
+                    }}
                 />
             </GridCell>
             <GridCell>
                 <GridLabel>Rounds</GridLabel>
-                <GridInput
-                    keyboardType="numeric"
+                <Slider
+                    minimumValue={0}
+                    maximumValue={5}
+                    step={1}
+                    value={rounds}
+                    onValueChange={n => setRounds(clamp(n, 0, 20))}
+                    disabled={!!inputsDisabled}
+                    style={{width: 120}}
+                />
+                <ValueInput
                     value={String(rounds)}
-                    onChangeText={handleInput(setRounds)}
-                    placeholder="3"
-                    maxLength={2}
+                    keyboardType="numeric"
+                    editable={!inputsDisabled}
+                    onChangeText={text => {
+                        const num = clamp(parseInt(text.replace(/[^0-9]/g, ''), 10) || 0, 0, 20);
+                        setRounds(num);
+                    }}
                 />
             </GridCell>
         </Grid>

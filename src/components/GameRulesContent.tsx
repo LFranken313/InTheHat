@@ -13,7 +13,7 @@ const Container = styled.View<{ padding: number }>`
     position: relative;
 `;
 
-const TitleText = styled(StyledText)<{ fontSize: number }>`
+const TitleText = styled(BoldText)<{ fontSize: number }>`
     font-size: ${props => props.fontSize}px;
     color: ${({ theme }) => theme.GameRulesTextColor};
     margin-bottom: 16px;

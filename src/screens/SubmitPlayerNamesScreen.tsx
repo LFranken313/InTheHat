@@ -14,6 +14,8 @@ const gameStateService = new GameStateService();
 const wordService = new WordService();
 const gameService = new GameService(gameStateService, wordService);
 
+
+//region Styled components
 const Label = styled(StyledText)`
     font-size: 20px;
     color: ${({ theme }) => theme.SubmitLabelColor};
@@ -105,21 +107,25 @@ const NamesEnteredText = styled(StyledText)`
     margin-top: 12px;
 `;
 
+//endregion
+
 const SubmitPlayerNamesScreen = () => {
     const route = useRoute();
     const navigation = useNavigation<any>();
     const theme = useTheme();
     const [name, setName] = useState('');
     const [names, setNames] = useState<string[]>([]);
-    const {players, teams, words, rounds, selectedCategories, customWords} = route.params as {
+    const {players, teams, words, rounds, selectedCategories, customWords, customGame} = route.params as {
         players: number;
         teams: number;
         words: number;
         rounds: number;
         selectedCategories: string[];
         customWords: string[];
+        customGame: boolean;
     };
 
+    //region Methods
     const addName = () => {
         if (name.trim() && names.length < players) {
             setNames([...names, name.trim()]);
@@ -152,9 +158,12 @@ const SubmitPlayerNamesScreen = () => {
             customWords
         )
         await gameStateService.saveGameState(game)
-        navigation.navigate('TeamOverviewScreen');
+        navigation.navigate('TeamOverviewScreen', customGame);
     };
 
+    //endregion
+
+    //region Html
     return (
         <ScreenContainer
             headerText="Enter player names"
@@ -211,6 +220,7 @@ const SubmitPlayerNamesScreen = () => {
                 {names.length} / {players} names entered
             </NamesEnteredText>
         </ScreenContainer>
+        //endregion
     );
 };
 

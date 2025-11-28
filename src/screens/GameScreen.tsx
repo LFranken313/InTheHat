@@ -15,6 +15,7 @@ const gameStateService = new GameStateService();
 const wordService = new WordService();
 const gameService = new GameService(gameStateService, wordService);
 
+//region Styled components
 const Container = styled.View`
     flex: 1;
     background: ${({ theme }) => theme.GameScreenContainerBackground};
@@ -32,8 +33,8 @@ const CardsLeftText = styled(StyledText)`
     color: ${({ theme }) => theme.CardsLeftTextColor};
     margin-top: 12px;
     text-align: center;
-    align-self: center;
-`;
+    font-weight: 600;
+    width: 100%;`;
 
 const CurrentStreak = styled(StyledText)`
     font-size: 30px;
@@ -75,6 +76,8 @@ const WordText = styled(StyledText)<{ fontSize: number }>`
     font-size: ${({fontSize}) => fontSize}px;
     color: ${({ theme }) => theme.WordTextColor};
     letter-spacing: 2px;
+    font-weight: 600;
+    width: 100%;
 `;
 
 const HintText = styled(StyledText)`
@@ -99,10 +102,11 @@ const FullscreenOverlay = styled.TouchableOpacity`
     right: 0;
     bottom: 0;
 `;
+//endregion
 
 const GameScreen = () => {
     const [roundEnded, setRoundEnded] = useState(false);
-    const [timer, setTimer] = useState(30);
+    const [timer, setTimer] = useState(3);
     const [currentWord, setCurrentWord] = useState<string>('');
     const [streak, setStreak] = useState<number>(0);
     const [isTimeUp, setIsTimeUp] = useState(false);
@@ -114,6 +118,7 @@ const GameScreen = () => {
     const gameRef = useRef<any>(null);
     const route = useRoute<RouteProp<{ params: GameScreenRouteParams }, 'params'>>();
     const playerName = route.params?.playerName;
+    const customGame = route.params?.customGame;
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
     type GameScreenRouteParams = {
@@ -161,7 +166,7 @@ const GameScreen = () => {
         const loadGame = async () => {
             setStreak(0);
             setIsTimeUp(false);
-            let initialTimer = 30;
+            let initialTimer = 3;
             const loadedGame = await gameService.continueGame();
             gameRef.current = loadedGame;
             if (
@@ -266,7 +271,6 @@ const GameScreen = () => {
         setLastGuessedWord(null);
         gameRef.current = await gameService.continueGame();
     };
-
     return (
         <ScreenContainer
             showPrimaryButton

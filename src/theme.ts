@@ -178,6 +178,7 @@ export const mainTheme = {
 
 // Girly theme colors
 const GirlyPink = '#FF69B4'
+const GirlyPrimaryButton = '#f898c9'
 const GirlyLightPink = '#FFF0F5'
 const GirlyPurple = '#A18FCB'
 const GirlyYellow = '#FFD6E0'
@@ -189,7 +190,7 @@ const GirlyLightPastelPink = '#E3B6D6'
 const GirlyTurquoise = '#AEEEEE'
 
 export const girlyTheme = {
-    primaryButtonBlue: GirlyPink,
+    primaryButtonBlue: GirlyPrimaryButton,
     primaryButtonBorder: GirlyLightPink,
 
     BannerColor: GirlyLightPastelPink,
@@ -246,15 +247,15 @@ export const girlyTheme = {
     TeamWhiteShadowColor: White,
 
     GameScreenContainerBackground: GirlyBeige,
-    GameScreenContainerBorder: GirlyYellow,
+    GameScreenContainerBorder: GirlyPink,
     CardsLeftTextColor: GirlyPink,
     CurrentStreakColor: GirlyPink,
     WordTextColor: GirlyPink,
-    HintTextColor: GirlyYellow,
+    HintTextColor: GirlyRed,
 
     PlayerTurnTeamNameColor: GirlyBlue,
     PlayerTurnPlayerNameColor: GirlyYellow,
-    PlayerTurnPlayerNameShadow: GirlyYellow,
+    PlayerTurnPlayerNameShadow: GirlyPink,
     PlayerTurnReadyTextColor: GirlyPink,
     PlayerTurnTimeLeftTextColor: GirlyRed,
 

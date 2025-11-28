@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import {FlatList, Dimensions} from 'react-native';
-import styled, {useTheme} from 'styled-components/native';
+import {Dimensions} from 'react-native';
+import styled from 'styled-components/native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import {StackNavigationProp} from '@react-navigation/stack';
 import presetWords from '../assets/PresetWords.json';
+import FillRandomModal from "../components/FillRandomModal";
 
 const screenWidth = Dimensions.get('window').width;
 const BUTTON_WIDTH = screenWidth * 0.38;
@@ -38,32 +39,7 @@ const WordInput = styled.TextInput`
     shadow-opacity: 0.25;
     shadow-radius: 4px;
     elevation: 6;
-`;
-
-const ButtonRow = styled.View`
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 16px;
-    gap: 16px;
-`;
-
-const ActionButton = styled.TouchableOpacity`
-    background: ${({theme}) => theme.SubmitWordsActionButtonBackground};
-    padding: 18px 0;
-    align-items: center;
-    border-width: 2px;
-    border-color: ${({theme}) => theme.SubmitWordsActionButtonBorder};
-    width: ${BUTTON_WIDTH}px;
-    shadow-color: ${({theme}) => theme.SubmitWordsActionButtonShadow};
-    shadow-offset: 0px 4px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
-    elevation: 6;
-`;
-
-const AddHatButton = styled(ActionButton)`
-    background: ${({theme}) => theme.SubmitWordsAddHatButtonBackground};
+    width: 60%;
 `;
 
 const AddButtonText = styled(StyledText)`
@@ -73,32 +49,6 @@ const AddButtonText = styled(StyledText)`
     letter-spacing: 1px;
     text-align: center;
     width: 100%;
-`;
-
-const WordGridItem = styled.TouchableOpacity<{ selected?: boolean }>`
-    flex: 1;
-    margin: 6px;
-    padding: 14px 0;
-    background-color: ${({theme}) => theme.SubmitWordsGridItemBackground};
-    border-width: 2px;
-    border-color: ${({theme}) => theme.SubmitWordsGridItemBorder};
-    align-items: center;
-    border-radius: 8px;
-    min-width: 0;
-`;
-
-const WordText = styled(StyledText)`
-    font-size: 18px;
-    color: ${({theme}) => theme.SubmitWordsGridItemText};
-    text-align: center;
-    width: 100%;
-    flex-shrink: 1;
-`;
-
-const RemoveText = styled(StyledText)`
-    color: ${({theme}) => theme.SubmitWordsRemoveText};
-    font-size: 15px;
-    margin-top: 4px;
 `;
 
 const BottomBar = styled.View`
@@ -113,6 +63,20 @@ const BottomBar = styled.View`
 const WordCountText = styled(StyledText)`
     color: ${({theme}) => theme.SubmitWordsCountText};
     margin-top: 12px;
+`;
+
+const ActionButton = styled.TouchableOpacity`
+    background: ${({theme}) => theme.SubmitWordsActionButtonBackground};
+    padding: 14px 0;
+    align-items: center;
+    border-width: 2px;
+    border-color: ${({theme}) => theme.SubmitWordsActionButtonBorder};
+    width: ${BUTTON_WIDTH}px;
+    shadow-color: ${({theme}) => theme.SubmitWordsActionButtonShadow};
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+    elevation: 6;
 `;
 
 const FillRandomButton = styled.TouchableOpacity`
@@ -155,15 +119,16 @@ type RootStackParamList = {
 const SubmitWordsScreen = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const route = useRoute();
-    const {words: requiredWords, players, teams, rounds} = route.params as {
+    const [showFillRandomModal, setShowFillRandomModal] = useState(false);
+    const {words: requiredWords, players, teams, rounds, customGame } = route.params as {
         words: number;
         players: number;
         teams: number;
         rounds: number;
+        customGame: boolean;
     };
 
     const [word, setWord] = useState('');
-    const [batch, setBatch] = useState<string[]>([]);
     const [hat, setHat] = useState<string[]>([]);
 
     const getRandomWords = (count: number) => {
@@ -175,30 +140,25 @@ const SubmitWordsScreen = () => {
         return shuffled.slice(0, count);
     };
 
-    const fillRandom = () => {
+    const handleFillRandom = () => {
+        setShowFillRandomModal(true);
+    };
+
+    const confirmFillRandom = () => {
         const missing = requiredWords - hat.length;
         if (missing > 0) {
             const randomWords = getRandomWords(missing);
             setHat([...hat, ...randomWords]);
         }
+        setShowFillRandomModal(false);
     };
 
     const addWord = () => {
         const trimmed = word.trim();
-        if (trimmed && !batch.includes(trimmed)) {
-            setBatch([...batch, trimmed]);
+        if (trimmed && !hat.includes(trimmed)) {
+            setHat([...hat, trimmed]);
             setWord('');
         }
-    };
-
-    const removeWord = (index: number) => {
-        setBatch(list => list.filter((_, i) => i !== index));
-    };
-
-    const addBatchToHat = () => {
-        setHat([...hat, ...batch]);
-        setBatch([]);
-        setWord('');
     };
 
     const handleSubmit = () => {
@@ -208,12 +168,12 @@ const SubmitWordsScreen = () => {
             teams,
             rounds,
             selectedCategories: [] as string[],
-            customWords: hat
+            customWords: hat,
+            customGame,
         });
     };
 
     const isAddDisabled = !word.trim();
-    const isBatchEmpty = batch.length === 0;
     const isPrimaryDisabled = hat.length < requiredWords;
 
     return (
@@ -239,39 +199,31 @@ const SubmitWordsScreen = () => {
                     onSubmitEditing={addWord}
                     returnKeyType="done"
                 />
-                <ButtonRow>
-                    <ActionButton onPress={addWord} disabled={isAddDisabled} style={{opacity: isAddDisabled ? 0.5 : 1}}>
-                        <AddButtonText>Add</AddButtonText>
-                    </ActionButton>
-                    <AddHatButton onPress={addBatchToHat} disabled={isBatchEmpty}
-                                  style={{opacity: isBatchEmpty ? 0.5 : 1}}>
-                        <AddButtonText>Add to the hat</AddButtonText>
-                    </AddHatButton>
-                </ButtonRow>
-                <FlatList
-                    data={batch}
-                    keyExtractor={(item, idx) => item + idx}
-                    numColumns={2}
-                    renderItem={({item, index}) => (
-                        <WordGridItem onPress={() => removeWord(index)}>
-                            <WordText>{item}</WordText>
-                            <RemoveText>Remove</RemoveText>
-                        </WordGridItem>
-                    )}
-                    style={{width: '100%', minHeight: 60}}
-                    scrollEnabled={false}
-                />
+
+                <ActionButton onPress={addWord} disabled={isAddDisabled} style={{opacity: isAddDisabled ? 0.5 : 1}}>
+                    <AddButtonText>Add</AddButtonText>
+                </ActionButton>
+
             </MainContent>
             <BottomBar>
                 <WordCountText>
                     {hat.length} / {requiredWords} words entered
                 </WordCountText>
-                <FillRandomButton onPress={fillRandom} disabled={hat.length >= requiredWords}>
+                <FillRandomButton
+                    onPress={handleFillRandom}
+                    disabled={hat.length >= requiredWords}
+                >
                     <FillRandomText>
                         Fill Random
                     </FillRandomText>
                 </FillRandomButton>
             </BottomBar>
+            <FillRandomModal
+                visible={showFillRandomModal}
+                onRequestClose={() => setShowFillRandomModal(false)}
+                onConfirm={confirmFillRandom}
+                missing={requiredWords - hat.length}
+            />
         </ScreenContainer>
     );
 }
