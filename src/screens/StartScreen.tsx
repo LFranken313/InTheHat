@@ -2,11 +2,13 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
 import {GameStateService} from '../logic/GameStateService';
 import {useNavigation} from '@react-navigation/native';
-import {useWindowDimensions, Image} from 'react-native';
+import {useWindowDimensions, Image, Modal, View, Text, Button} from 'react-native'
 import ScreenContainer from '../components/ScreenContainer';
 import StyledBold from '../components/StyledBold';
 import StyledText from '../components/StyledText';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//region Styled components
 const Banner = styled(StyledBold)`
     font-size: 100px;
     color: ${({ theme }) => theme.BannerColor};
@@ -27,7 +29,7 @@ const ButtonLabel = styled(StyledText)`
     width: 100%;
 `;
 
-const Button = styled.TouchableOpacity`
+const StyledButton = styled.TouchableOpacity`
     background-color: ${({ theme }) => theme.MainScreenButtonBackGround};
     border-color: ${({ theme }) => theme.MainScreenButtonBorder};
     border-width: 2px;
@@ -52,7 +54,7 @@ const ButtonRow = styled.View`
     margin-bottom: 16px;
 `;
 
-const HalfButton = styled(Button)`
+const HalfButton = styled(StyledButton)`
     width: 48%;
     margin-bottom: 0;
 `;
@@ -69,11 +71,14 @@ const ButtonContainer = styled.View`
     margin-top: auto;
     padding-bottom: 10%;
 `;
+//endregion
 
 const StartScreen = () => {
     const [hasSavedGame, setHasSavedGame] = useState(false);
     const navigation = useNavigation();
-    const {height} = useWindowDimensions();
+    const { height}  = useWindowDimensions();
+    const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
 
     useEffect(() => {
         const checkSavedGame = async () => {
@@ -83,6 +88,19 @@ const StartScreen = () => {
         };
         checkSavedGame();
     }, []);
+
+    useEffect(() => {
+        const checkWelcomeModal = async () => {
+            const shown = await AsyncStorage.getItem('welcomeModalShown');
+            if (!shown) setShowWelcomeModal(true);
+        };
+        checkWelcomeModal();
+    }, []);
+
+    const handleModalClose = async () => {
+        await AsyncStorage.setItem('welcomeModalShown', 'true');
+        setShowWelcomeModal(false);
+    };
 
     const handleStartPress = (customGame: boolean) => {
         navigation.navigate('Setup', { customGame });
@@ -111,14 +129,22 @@ const StartScreen = () => {
                     </HalfButton>
                 </ButtonRow>
                 {hasSavedGame && (
-                    <Button onPress={() => navigation.navigate('PlayerTurnScreen' as never)}>
+                    <StyledButton onPress={() => navigation.navigate('PlayerTurnScreen' as never)}>
                         <ButtonLabel>Load last game</ButtonLabel>
-                    </Button>
+                    </StyledButton>
                 )}
-                <Button onPress={() => navigation.navigate('SettingsScreen' as never)}>
+                <StyledButton onPress={() => navigation.navigate('SettingsScreen' as never)}>
                     <ButtonLabel>Settings</ButtonLabel>
-                </Button>
+                </StyledButton>
             </ButtonContainer>
+            <Modal visible={showWelcomeModal} transparent>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+                        <Text>Welcome to the game!</Text>
+                        <Button title="Close" onPress={handleModalClose} />
+                    </View>
+                </View>
+            </Modal>
         </ScreenContainer>
     );
 };

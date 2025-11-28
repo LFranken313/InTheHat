@@ -2,9 +2,7 @@ import React from 'react';
 import {Modal} from 'react-native';
 import styled from 'styled-components/native';
 import StyledText from './StyledText';
-import {useTheme} from 'styled-components/native';
 
-//region Styled Components
 const ModalContainer = styled.View`
     flex: 1;
     background-color: rgba(0, 0, 0, 0.7);
@@ -31,21 +29,29 @@ const ModalText = styled(StyledText)`
     width: 100%;
 `;
 
-const ExitButton = styled.TouchableOpacity`
+const ConfirmButton = styled.TouchableOpacity`
     background-color: ${({theme}) => theme.ModalButtonBackground};
     padding: 12px 32px;
     border-width: 2px;
+    width: 75%;
     border-color: ${({theme}) => theme.ModalButtonBorder};
+    /* iOS shadow */
+    shadow-color: ${({ theme }) => theme.black};
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+
+    /* Android shadow */
+    elevation: 6;
 `;
 
-const ExitButtonText = styled(StyledText)`
+const ConfirmButtonText = styled(StyledText)`
     color: ${({theme}) => theme.ModalButtonTextColor};
     font-size: 18px;
-    font-weight: 600;
     letter-spacing: 1px;
+    font-weight: 600;
     text-align: center;
-    width: 100%;
-`;
+    width: 100%;`;
 
 const CancelButton = styled.TouchableOpacity`
     background-color: ${({theme}) => theme.ModalCancelButtonBackground};
@@ -53,63 +59,58 @@ const CancelButton = styled.TouchableOpacity`
     border-width: 2px;
     border-color: ${({theme}) => theme.ModalButtonBorder};
     margin-top: 16px;
+    width: 75%;
+    /* iOS shadow */
+    shadow-color: ${({ theme }) => theme.black};
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+
+    /* Android shadow */
+    elevation: 6;
 `;
 
 const CancelButtonText = styled(StyledText)`
     color: ${({theme}) => theme.ModalCancelButtonTextColor};
     font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 1px;
     text-align: center;
+    font-weight: 600;
     width: 100%;
 `;
-
-const buttonShadow = (theme: any) => ({
-    shadowColor: theme.MainScreenButtonShadow,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
-});
-
-//endregion
 
 type Props = {
     visible: boolean;
     onRequestClose: () => void;
-    onConfirmExit: () => void;
-    buttonShadow: (theme: any) => object;
+    onConfirm: () => void;
+    missing: number;
 };
 
-const GameExitModal: React.FC<Props> = ({
+const FillRandomModal: React.FC<Props> = ({
     visible,
     onRequestClose,
-    onConfirmExit,
-}) => {
-    const theme = useTheme();
+    onConfirm,
+    missing,
+}) => (
+    <Modal
+        visible={visible}
+        transparent
+        animationType="fade"
+        onRequestClose={onRequestClose}
+    >
+        <ModalContainer>
+            <ModalCard>
+                <ModalText>
+                    Fill the remaining {missing} words with random ones?
+                </ModalText>
+                <ConfirmButton onPress={onConfirm}>
+                    <ConfirmButtonText>Yes, fill random</ConfirmButtonText>
+                </ConfirmButton>
+                <CancelButton onPress={onRequestClose}>
+                    <CancelButtonText>Cancel</CancelButtonText>
+                </CancelButton>
+            </ModalCard>
+        </ModalContainer>
+    </Modal>
+);
 
-    return (
-        <Modal
-            visible={visible}
-            transparent
-            animationType="fade"
-            onRequestClose={onRequestClose}
-        >
-            <ModalContainer>
-                <ModalCard>
-                    <ModalText>
-                        Exit game?{'\n'}(game will be saved)
-                    </ModalText>
-                    <ExitButton onPress={onConfirmExit} style={buttonShadow(theme)}>
-                        <ExitButtonText>Exit Game</ExitButtonText>
-                    </ExitButton>
-                    <CancelButton onPress={onRequestClose} style={buttonShadow(theme)}>
-                        <CancelButtonText>Cancel</CancelButtonText>
-                    </CancelButton>
-                </ModalCard>
-            </ModalContainer>
-        </Modal>
-    );
-};
-
-export default GameExitModal;
+export default FillRandomModal;

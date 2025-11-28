@@ -9,6 +9,7 @@ type GameRulesModalProps = {
     onClose: () => void;
 };
 
+//region Styled components
 const ModalContainer = styled.View<{ width: number; maxHeight: number }>`
     background-color: ${({ theme }) => theme.ModalCardBackground};
     border-radius: 16px;
@@ -25,6 +26,7 @@ const CloseIcon = styled(StyledText)`
     font-size: 28px;
     text-shadow: 1px 1px 4px #00000055;
 `;
+//endregion
 
 export default function GameRulesModal({visible, onClose}: GameRulesModalProps) {
     const {width, height} = useWindowDimensions();
