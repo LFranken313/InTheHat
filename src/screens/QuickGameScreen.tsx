@@ -10,8 +10,8 @@ import GameOverview from '../components/GameOverview';
 import ScreenContainer from '../components/ScreenContainer';
 import ListContainer from "../components/ListContainer";
 import CategoryCard from '../components/CategoryCard';
-import textContent from '../textContent.json';
 import {useLanguage} from "../logic/LanguageContext";
+import {translations} from "../translations";
 
 const wordService = new WordService();
 
@@ -93,7 +93,7 @@ const QuickGameScreen = () => {
     const isValid = selected.size > 0;
     const [loading, setLoading] = useState(true);
     const { language } = useLanguage();
-    const localizedText = textContent[language].quickGameScreen;
+    const localizedText = translations[language].quickGameScreen;
 
     const {players, teams, words, rounds, customGame} = route.params as {
         players: number;

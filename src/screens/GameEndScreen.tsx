@@ -11,6 +11,7 @@ import {Game} from '../models/Game';
 import winningMessage from '../assets/WinningMessage.json'
 import { useTheme } from 'styled-components/native';
 
+//region Styled components
 const primaryBlue = '#6fb8e6';
 const gold = '#FFD700';
 const silver = '#C0C0C0';
@@ -61,8 +62,10 @@ const TeamsScroll = styled(ScrollView)`
     padding-vertical: 8px;
     margin-top: 5%;
 `;
+//endregion
 
 
+//TODO: TRANSLATION NEEDED
 const gameStateService = new GameStateService();
 const wordService = new WordService();
 const gameService = new GameService(gameStateService, wordService);

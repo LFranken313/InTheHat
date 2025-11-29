@@ -1,7 +1,10 @@
 import React from 'react';
 import StyledText from './StyledText';
 import styled from 'styled-components/native';
+import {useLanguage} from "../logic/LanguageContext";
+import {translations} from "../translations";
 
+//region Styled components
 const OverviewGrid = styled.View`
     flex-direction: row;
     flex-wrap: wrap;
@@ -35,6 +38,7 @@ const OverviewValue = styled(StyledText)`
     color: ${({ theme }) => theme.OverViewValue};
     font-weight: bold;
 `;
+//endregion
 
 type GameOverviewProps = {
     players: number;
@@ -43,25 +47,31 @@ type GameOverviewProps = {
     rounds: number;
 };
 
-const GameOverview: React.FC<GameOverviewProps> = ({ players, teams, words, rounds }) => (
-    <OverviewGrid>
-        <OverviewItem>
-            <OverviewLabel>Players</OverviewLabel>
-            <OverviewValue>{players}</OverviewValue>
-        </OverviewItem>
-        <OverviewItem>
-            <OverviewLabel>Words</OverviewLabel>
-            <OverviewValue>{words}</OverviewValue>
-        </OverviewItem>
-        <OverviewItem>
-            <OverviewLabel>Teams</OverviewLabel>
-            <OverviewValue>{teams}</OverviewValue>
-        </OverviewItem>
-        <OverviewItem>
-            <OverviewLabel>Rounds</OverviewLabel>
-            <OverviewValue>{rounds}</OverviewValue>
-        </OverviewItem>
-    </OverviewGrid>
-);
+const GameOverview: React.FC<GameOverviewProps> = ({ players, teams, words, rounds }) => {
+    const { language } = useLanguage();
+    const localizedText = translations[language].gameOverview;
+
+    return (
+        <OverviewGrid>
+            <OverviewItem>
+                <OverviewLabel>{localizedText.playerLabel}</OverviewLabel>
+                <OverviewValue>{players}</OverviewValue>
+            </OverviewItem>
+            <OverviewItem>
+                <OverviewLabel>{localizedText.wordLabel}</OverviewLabel>
+                <OverviewValue>{words}</OverviewValue>
+            </OverviewItem>
+            <OverviewItem>
+                <OverviewLabel>{localizedText.teamLabel}</OverviewLabel>
+                <OverviewValue>{teams}</OverviewValue>
+            </OverviewItem>
+            <OverviewItem>
+                <OverviewLabel>{localizedText.roundLabel}</OverviewLabel>
+                <OverviewValue>{rounds}</OverviewValue>
+            </OverviewItem>
+        </OverviewGrid>
+    );
+};
+
 
 export default GameOverview;

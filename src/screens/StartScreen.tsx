@@ -8,7 +8,7 @@ import StyledBold from '../components/StyledBold';
 import StyledText from '../components/StyledText';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ModalComponent from "../components/ModalComponent";
-import textContent from '../textContent.json';
+import {translations} from "../translations";
 import { useLanguage } from '../logic/LanguageContext';
 import { Linking, TouchableOpacity } from 'react-native';
 
@@ -103,7 +103,7 @@ const StartScreen = () => {
     const { height}  = useWindowDimensions();
     const [showWelcomeModal, setShowWelcomeModal] = useState(false);
     const { language } = useLanguage();
-    const localizedText = textContent[language].startScreen;
+    const localizedText = translations[language].startScreen;
 
     useEffect(() => {
         const checkSavedGame = async () => {

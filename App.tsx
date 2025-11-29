@@ -9,7 +9,6 @@ import {ThemeProvider} from 'styled-components/native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {LanguageContext} from './src/logic/LanguageContext';
 
-
 import StartScreen from './src/screens/StartScreen';
 import SetupScreen from './src/screens/SetupScreen';
 import QuickGameScreen from './src/screens/QuickGameScreen';

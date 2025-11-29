@@ -5,11 +5,10 @@ import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import styled from 'styled-components/native';
 import SetupGrid from "../components/SetupGrid";
-import textContent from '../textContent.json';
+import {translations} from "../translations";
 import {useLanguage} from "../logic/LanguageContext";
 import ModalComponent from "../components/ModalComponent";
 import GameRulesContent from "../components/GameRulesContent";
-
 
 //region Styled components
 
@@ -98,8 +97,8 @@ const SetupScreen = () => {
     const [hasShownWordWarning, setHasShownWordWarning] = useState(false);
     const [warningText, setwarningText] = useState('');
     const { language } = useLanguage();
-    const localizedText = textContent[language].setupScreen;
-    const rulesModalText = textContent[language].rulesModal;
+    const localizedText = translations[language].setupScreen;
+    const rulesModalText = translations[language].rulesModal;
 
     const isFormValid = () => {
         if (!customGame) {

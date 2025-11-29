@@ -6,6 +6,7 @@ import StyledText from '../components/StyledText';
 import {GameStateService} from '../logic/GameStateService';
 import { StackNavigationProp } from '@react-navigation/stack';
 import {useNavigation, useRoute} from '@react-navigation/native';
+//TODO: ADD TRANSLATIONS
 
 //region Styled components
 const windowHeight = Dimensions.get('window').height;

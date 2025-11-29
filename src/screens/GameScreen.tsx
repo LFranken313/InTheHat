@@ -8,10 +8,11 @@ import {GameService} from '../logic/GameService';
 import StyledText from '../components/StyledText';
 import ScreenContainer from '../components/ScreenContainer';
 import GameTopBar from "../components/GameTopBar";
-import GameExitModal from "../components/GameExitModal";
 import {StackNavigationProp} from "@react-navigation/stack";
-import textContent from '../textContent.json';
+import {translations} from "../translations";
 import {useLanguage} from "../logic/LanguageContext";
+import ModalComponent from "../components/ModalComponent";
+
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -29,6 +30,14 @@ const Container = styled.View`
     border-color: ${({ theme }) => theme.GameScreenContainerBorder};
     border-radius: 16px;
     margin-top: 3%;
+`;
+
+const ModalText = styled(StyledText)`
+    font-size: 18px;
+    color: ${({theme}) => theme.ModalTextColor};
+    text-align: center;
+    font-weight: 600;
+    width: 100%;
 `;
 
 const CardsLeftText = styled(StyledText)`
@@ -120,10 +129,9 @@ const GameScreen = () => {
     const gameRef = useRef<any>(null);
     const route = useRoute<RouteProp<{ params: GameScreenRouteParams }, 'params'>>();
     const playerName = route.params?.playerName;
-    const customGame = route.params?.customGame;
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const { language } = useLanguage();
-    const localizedText = textContent[language].gameScreen;
+    const localizedText = translations[language].gameScreen;
 
 
     type GameScreenRouteParams = {
@@ -322,12 +330,22 @@ const GameScreen = () => {
                     onPress={() => navigation.navigate('RoundEndScreen')}
                 />
             )}
-            <GameExitModal
+            <ModalComponent
                 visible={showExitModal}
-                onRequestClose={() => setShowExitModal(false)}
-                onConfirmExit={confirmExit}
-                buttonShadow={buttonShadow}
-            />
+                onClose={() => setShowExitModal(false)}
+                primaryButton={{
+                    label: localizedText.exitGameLabel,
+                    onPress: confirmExit
+                }}
+                secondaryButton={{
+                    label: localizedText.cancelButtonLabel,
+                    onPress: () => setShowExitModal(false)
+                }}
+            >
+                <ModalText style={{ textAlign: 'center', fontSize: 18 }}>
+                    {localizedText.exitModalText}
+                </ModalText>
+            </ModalComponent>
         </ScreenContainer>
     );
 };

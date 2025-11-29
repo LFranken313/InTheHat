@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import styled from 'styled-components/native';
 import StyledText from './StyledText';
 
+//region Styled components
 const Button = styled.TouchableOpacity`
     background-color: ${({ theme }) => theme.primaryButtonBlue};
     border-color: ${({ theme }) => theme.primaryButtonBorder};
@@ -29,6 +30,8 @@ const ButtonText = styled(StyledText)`
     text-align: center;
     width: 100%;
 `;
+
+//endregion
 
 type PrimaryButtonProps = {
     onPress: () => void;

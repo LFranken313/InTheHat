@@ -9,11 +9,7 @@
       }
     },
     "android": {
-      "package": "com.lucafranken.maninthehat",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/tophat.png",
-        "backgroundColor": "#FFFFFF"
-      }
+      "package": "com.lucafranken.maninthehat"
     },
     "ios": {
       "bundleIdentifier": "com.lucafranken.maninthehat"

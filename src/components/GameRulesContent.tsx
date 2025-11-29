@@ -2,9 +2,10 @@ import React from 'react';
 import styled from 'styled-components/native';
 import BoldText from './StyledBold';
 import StyledText from './StyledText';
-import textContent from '../textContent.json';
+import {translations} from "../translations";
 import {useLanguage} from '../logic/LanguageContext';
 
+//region Styled components
 const ScrollArea = styled.ScrollView``;
 
 const ContentWrapper = styled.View`
@@ -30,13 +31,15 @@ const SectionContent = styled(StyledText)<{ fontSize: number }>`
     margin-bottom: 20px;
 `;
 
+//endregion
+
 type GameRulesModalContentProps = {
     onClose: () => void;
 };
 
 export default function GameRulesContent({onClose}: GameRulesModalContentProps) {
     const {language} = useLanguage();
-    const localizedText = textContent[language].rulesModal;
+    const localizedText = translations[language].rulesModal;
 
     const ruleSections = [
         {title: localizedText.round1Title, content: localizedText.round1Content},

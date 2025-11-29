@@ -11,6 +11,8 @@ import styled from 'styled-components/native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import StyledBold from '../components/StyledBold';
+import {useLanguage} from "../logic/LanguageContext";
+import {translations} from "../translations";
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -91,6 +93,8 @@ const PlayerTurnScreen = () => {
     const route = useRoute();
     const customGame = route.params as { customGame: boolean };
     const [currentRound, setCurrentRound] = useState<number>();
+    const { language } = useLanguage();
+    const localizedText = translations[language].playerTurnScreen;
 
     useEffect(() => {
         return navigation.addListener('beforeRemove', (e: EventArg<'beforeRemove', false, any>) => {
@@ -129,21 +133,21 @@ const PlayerTurnScreen = () => {
     const getInstructions = () => {
         switch (currentRound) {
             case 1:
-                return "Forbidden word. Describe the word without saying it!";
+                return localizedText.roundOne;
             case 2:
-                return "Act it out, no words!";
+                return localizedText.roundTwo;
             case 3:
-                return "Use only one word!";
+                return localizedText.roundThree;
             default:
-                return "Get ready to play!";
+                return localizedText.switchDefault;
         }
     };
 
     return (
         <ScreenContainer
-            headerText="Get Ready!"
+            headerText={localizedText.title}
             showPrimaryButton
-            primaryButtonText="Go"
+            primaryButtonText={localizedText.primaryButton}
             onPrimaryButtonPress={handleGo}
         >
             <Centered>
@@ -154,7 +158,7 @@ const PlayerTurnScreen = () => {
                 )}
                 {currentPlayerName && currentTeamName && (
                     <>
-                        <ReadyText>Are you ready</ReadyText>
+                        <ReadyText>{localizedText.readyText}</ReadyText>
                         {/*<TeamName>{currentTeamName}'s</TeamName>*/}
                         <PlayerName
                             numberOfLines={1}

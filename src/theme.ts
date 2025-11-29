@@ -348,7 +348,7 @@ export const darkTheme = {
     primaryButtonBorder: DarkWhite,
 
     BannerColor: DarkGreen,
-    BannerColorShadow: 222E50,
+    BannerColorShadow: '#222E50',
 
     MainScreenButtonLabel: DarkWhite,
     MainScreenButtonBackGround: DarkAccent,

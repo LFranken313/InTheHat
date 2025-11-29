@@ -3,6 +3,7 @@ import {Modal} from 'react-native';
 import styled from 'styled-components/native';
 import StyledText from './StyledText';
 
+//region Styled components
 const ModalBackground = styled.View`
     flex: 1;
     justify-content: center;
@@ -59,6 +60,7 @@ const SecondaryButton = styled(ActionButton)`
 const SecondaryButtonText = styled(ActionButtonText)`
     color: ${({theme}) => theme.ModalCancelButtonTextColor};
 `;
+//endregion
 
 type ModalButton = {
     label: string;

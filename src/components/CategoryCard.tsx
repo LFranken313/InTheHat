@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components/native';
 import StyledText from './StyledText';
 
+//region Styled components
+
 const Card = styled.TouchableOpacity<{ selected: boolean }>`
     flex: 1;
     margin: 8px;
@@ -25,6 +27,8 @@ const CategoryText = styled(StyledText)<{ selected: boolean }>`
     text-align: center;
     width: 100%;
 `;
+
+//endregion
 
 type CategoryCardProps = {
     selected: boolean;

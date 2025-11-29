@@ -3,6 +3,8 @@ import {Dimensions, View} from 'react-native';
 import StyledBold from './StyledBold';
 import styled from 'styled-components/native';
 
+
+//region styled components
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CONTAINER_WIDTH = SCREEN_WIDTH * 0.9;
 const BASE_FONT_SIZE = Math.min(SCREEN_WIDTH * 0.10, 82);
@@ -33,6 +35,8 @@ const Underline = styled.View`
     bottom: 0;
     border-radius: 2px;
 `;
+
+//endregion
 
 type BigHeaderProps = {
     children: ReactNode;

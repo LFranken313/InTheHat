@@ -9,6 +9,8 @@ import {GameStateService} from '../logic/GameStateService';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {RandomNamesService} from '../logic/RandomNamesService';
 import ListContainer from "../components/ListContainer";
+import {useLanguage} from "../logic/LanguageContext";
+import {translations} from "../translations";
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -115,6 +117,8 @@ const SubmitPlayerNamesScreen = () => {
     const theme = useTheme();
     const [name, setName] = useState('');
     const [names, setNames] = useState<string[]>([]);
+    const { language } = useLanguage();
+    const localizedText = translations[language].submitPlayerNamesScreen;
     const {players, teams, words, rounds, selectedCategories, customWords, customGame} = route.params as {
         players: number;
         teams: number;
@@ -166,18 +170,18 @@ const SubmitPlayerNamesScreen = () => {
     //region Html
     return (
         <ScreenContainer
-            headerText="Enter player names"
+            headerText={localizedText.title}
             headerLines={2}
             showPrimaryButton
-            primaryButtonText="Next: Team overview"
+            primaryButtonText={localizedText.primaryButton}
             onPrimaryButtonPress={handleSubmit}
             primaryButtonDisabled={names.length !== players}
         >
-            <Label>Player name:</Label>
+            <Label>{localizedText.playerNameLabel}</Label>
             <NameInput
                 value={name}
                 onChangeText={setName}
-                placeholder="Enter name"
+                placeholder={localizedText.playerNamePlaceholder}
                 editable={names.length < players}
                 onSubmitEditing={addName}
                 returnKeyType="done"
@@ -191,7 +195,7 @@ const SubmitPlayerNamesScreen = () => {
                         buttonShadow
                     ]}
                 >
-                    <AddButtonText>Add</AddButtonText>
+                    <AddButtonText>{localizedText.addButton}</AddButtonText>
                 </AddButton>
                 <RandomButton
                     onPress={fillRandomNames}
@@ -200,7 +204,7 @@ const SubmitPlayerNamesScreen = () => {
                         buttonShadow
                     ]}
                 >
-                    <RandomButtonText>Random names</RandomButtonText>
+                    <RandomButtonText>{localizedText.randomNamesButton}</RandomButtonText>
                 </RandomButton>
             </ButtonRow>
             <ListContainer flatListProps={{
@@ -217,7 +221,7 @@ const SubmitPlayerNamesScreen = () => {
                 scrollEnabled: true,
             }}/>
             <NamesEnteredText>
-                {names.length} / {players} names entered
+                {names.length} / {players} {localizedText.namesEntered}
             </NamesEnteredText>
         </ScreenContainer>
         //endregion

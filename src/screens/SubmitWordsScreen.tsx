@@ -7,10 +7,13 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import presetWords from '../assets/PresetWords.json';
 import ModalComponent from '../components/ModalComponent';
+import {useLanguage} from "../logic/LanguageContext";
+import {translations} from "../translations";
 
 const screenWidth = Dimensions.get('window').width;
 const BUTTON_WIDTH = screenWidth * 0.38;
 
+//region Styled components
 const MainContent = styled.ScrollView`
     margin-top: 32px;
     width: 100%;
@@ -106,6 +109,7 @@ const FillRandomText = styled(StyledText)`
     color: ${({theme}) => theme.SubmitWordsFillRandomText};
     font-size: 20px;
 `;
+//endregion
 
 type RootStackParamList = {
     SubmitWordsScreen: {
@@ -128,6 +132,8 @@ const SubmitWordsScreen = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const route = useRoute();
     const [showFillRandomModal, setShowFillRandomModal] = useState(false);
+    const { language } = useLanguage();
+    const localizedText = translations[language].submitWordsSreen;
     const {words: requiredWords, players, teams, rounds, customGame } = route.params as {
         words: number;
         players: number;
@@ -186,9 +192,9 @@ const SubmitWordsScreen = () => {
 
     return (
         <ScreenContainer
-            headerText="Enter words"
+            headerText={localizedText.title}
             showPrimaryButton
-            primaryButtonText="Next: player names"
+            primaryButtonText={localizedText.primaryButton}
             onPrimaryButtonPress={handleSubmit}
             primaryButtonDisabled={isPrimaryDisabled}
         >
@@ -197,13 +203,12 @@ const SubmitWordsScreen = () => {
                 showsVerticalScrollIndicator={false}
             >
                 <Label>
-                    Enter at least {requiredWords} words{'\n'}
-                    (more is allowed)
+                    {localizedText.atLeast} {requiredWords} {localizedText.moreIsAllowed}
                 </Label>
                 <WordInput
                     value={word}
                     onChangeText={setWord}
-                    placeholder="Enter word"
+                    placeholder={localizedText.wordPlaceholder}
                     onSubmitEditing={addWord}
                     returnKeyType="done"
                 />
@@ -215,14 +220,14 @@ const SubmitWordsScreen = () => {
             </MainContent>
             <BottomBar>
                 <WordCountText>
-                    {hat.length} / {requiredWords} words entered
+                    {hat.length} / {requiredWords} {localizedText.wordsEntered}
                 </WordCountText>
                 <FillRandomButton
                     onPress={handleFillRandom}
                     disabled={hat.length >= requiredWords}
                 >
                     <FillRandomText>
-                        Fill Random
+                        {localizedText.fillRandom}
                     </FillRandomText>
                 </FillRandomButton>
             </BottomBar>
@@ -230,16 +235,16 @@ const SubmitWordsScreen = () => {
                 visible={showFillRandomModal}
                 onClose={() => setShowFillRandomModal(false)}
                 primaryButton={{
-                    label: "Confirm",
+                    label: localizedText.confirmButtonLabel,
                     onPress: confirmFillRandom
                 }}
                 secondaryButton={{
-                    label: "Cancel",
+                    label: localizedText.cancelButtonLabel,
                     onPress: () => setShowFillRandomModal(false)
                 }}
             >
                 <ModalText style={{ textAlign: 'center', fontSize: 18 }}>
-                    {`Fill ${requiredWords - hat.length} missing words with random ones?`}
+                    {`${localizedText.fill} ${requiredWords - hat.length} ${localizedText.restOfTheWords}`}
                 </ModalText>
             </ModalComponent>
         </ScreenContainer>

@@ -3,8 +3,8 @@ import styled from 'styled-components/native';
 import StyledText from './StyledText';
 import {TextInput} from 'react-native';
 import Slider from '@react-native-community/slider';
-import textContent from '../textContent.json';
 import {useLanguage} from "../logic/LanguageContext";
+import {translations} from "../translations";
 
 //region Styled components
 const Grid = styled.View`
@@ -66,7 +66,7 @@ export default function SetupGrid({
   inputsDisabled
 }: SetupGridProps) {
     const { language } = useLanguage();
-    const localizedText = textContent[language].setupScreen;
+    const localizedText = translations[language].setupScreen;
     return (
         <Grid>
             <GridCell>

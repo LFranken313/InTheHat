@@ -9,8 +9,9 @@ import {View} from 'react-native';
 import SettingsSection from "../components/SettingsSection";
 import ModalComponent from "../components/ModalComponent";
 import GameRulesContent from "../components/GameRulesContent";
-import textContent from '../textContent.json';
+import {translations} from "../translations";
 import {useLanguage} from "../logic/LanguageContext";
+import {Language} from "../translations";
 
 
 //region Styled components
@@ -214,8 +215,8 @@ export default function SettingsScreen({themeMode, setThemeMode, navigation}: Se
     const {font, setFont} = useFont();
     const [showInfo, setShowInfo] = useState(false);
     const { language, setLanguage } = useLanguage();
-    const rulesModalText = textContent[language].rulesModal;
-    const localizedText = textContent[language].settingsScreen;
+    const rulesModalText = translations[language].rulesModal;
+    const localizedText = translations[language].settingsScreen;
 
     const handleThemeChange = async (mode: 'normal' | 'dark' | 'girly') => {
         setThemeMode(mode);
@@ -227,7 +228,7 @@ export default function SettingsScreen({themeMode, setThemeMode, navigation}: Se
         await AsyncStorage.setItem(FONT_KEY, fontValue);
     };
 
-    const handleLanguageChange = async (lang: string) => {
+    const handleLanguageChange = async (lang: Language) => {
         setLanguage(lang);
         await AsyncStorage.setItem('user_language', lang);
     };
@@ -288,7 +289,7 @@ export default function SettingsScreen({themeMode, setThemeMode, navigation}: Se
                         <PickerWrapper>
                             <StyledPicker
                                 selectedValue={language}
-                                onValueChange={(value) => handleLanguageChange(value)}
+                                onValueChange={(value: Language) => handleLanguageChange(value)}
                             >
                                 <Picker.Item label="Nederlands" value="nl" />
                                 <Picker.Item label="English" value="en" />

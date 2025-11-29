@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components/native';
 import StyledBold from './StyledBold';
 
+//region Styled components
 const SectionContainer = styled.View`
     width: 100%;
     padding: 16px;
@@ -23,6 +24,7 @@ const Underline = styled.View`
     margin-left: 0;
     align-self: flex-start;
 `;
+//endregion
 
 type SettingsSectionProps = {
     header: string;

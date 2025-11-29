@@ -1,9 +1,10 @@
 import React from 'react';
-import styled from 'styled-components/native';
+import styled, { useTheme } from 'styled-components/native';
 import StyledText from './StyledText';
-import { useTheme } from 'styled-components/native';
+import { translations } from "../translations";
+import {useLanguage} from "../logic/LanguageContext";
 
-
+//region Styled components
 const TopBar = styled.View`
     flex-direction: row;
     align-items: center;
@@ -50,6 +51,7 @@ const FlexItem = styled.View`
     align-items: center;
     justify-content: center;
 `;
+//endregion
 
 type Props = {
     timer: number;
@@ -62,12 +64,14 @@ type Props = {
 const GameTopBar: React.FC<Props> = ({timer, onExit, onUndo, undoDisabled, buttonShadow}) => {
     const theme = useTheme();
     const shadow = buttonShadow(theme);
+    const { language } = useLanguage();
+    const localizedText = translations[language].gameTopBar;
 
     return (
         <TopBar>
             <FlexItem>
                 <ExitButton onPress={onExit} style={shadow}>
-                    <ExitButtonText>Exit</ExitButtonText>
+                    <ExitButtonText>{localizedText.exitButton}</ExitButtonText>
                 </ExitButton>
             </FlexItem>
             <FlexItem>
@@ -75,7 +79,7 @@ const GameTopBar: React.FC<Props> = ({timer, onExit, onUndo, undoDisabled, butto
             </FlexItem>
             <FlexItem>
                 <UndoButton onPress={onUndo} disabled={undoDisabled} style={shadow}>
-                    <StyledText style={{color: '#fff', fontSize: 18}}>Undo</StyledText>
+                    <StyledText style={{color: '#fff', fontSize: 18}}>{localizedText.undoButton}</StyledText>
                 </UndoButton>
             </FlexItem>
         </TopBar>

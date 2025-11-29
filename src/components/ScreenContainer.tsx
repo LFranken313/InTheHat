@@ -4,6 +4,8 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import BigHeader from './BigHeader';
 import PrimaryButton from './PrimaryButton';
 
+
+//region Styled components
 const Outer = styled(SafeAreaView)`
     background-color : ${({theme}) => theme.ScreenContainerBackground};
     flex: 1;
@@ -20,6 +22,7 @@ const Content = styled.View`
     align-self: center;
     margin-bottom: 12px;
 `;
+//endregion
 
 type ScreenContainerProps = {
     headerText?: string | null;

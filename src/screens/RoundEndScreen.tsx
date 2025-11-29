@@ -10,6 +10,7 @@ import styled from 'styled-components/native';
 import {ScrollView} from 'react-native';
 import {Game} from '../models/Game';
 import {useTheme} from 'styled-components/native';
+//TODO: ADD TRANSLATIONS
 
 
 const gameStateService = new GameStateService();
@@ -22,6 +23,7 @@ type RootStackParamList = {
     GameEndScreen: undefined;
 };
 
+//region Styled components
 const gold = '#FFD700';
 const silver = '#C0C0C0';
 const bronze = '#CD7F32';
@@ -62,6 +64,7 @@ const TeamsScroll = styled(ScrollView)`
     padding-vertical: 8px;
     margin-top: 5%;
 `;
+//endregion
 
 const RoundEndScreen = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'RoundEndScreen'>>();
