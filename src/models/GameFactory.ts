@@ -8,6 +8,7 @@ export class GameFactory {
     }
 
     async createGame(
+        customGame: boolean,
         playerNames: string[],
         numberOfTeams: number,
         numberOfRoundsToPlay: number,
@@ -26,6 +27,7 @@ export class GameFactory {
             wordObjects = this.shuffle(allWords).slice(0, numberOfWords);
         }
         return this.setupGame(
+            customGame,
             wordObjects,
             playerNames,
             numberOfTeams,
@@ -34,12 +36,14 @@ export class GameFactory {
     }
 
     private setupGame(
+        customGame: boolean,
         words: Word[],
         playerNames: string[],
         numberOfTeams: number,
         numberOfRoundsToPlay: number
     ): Game {
         const game = new Game();
+        game.customGame = customGame;
         game.currentRound = 1;
         game.numberOfRoundsToPlay = numberOfRoundsToPlay;
         game.players = playerNames.map(name => new Player(name));

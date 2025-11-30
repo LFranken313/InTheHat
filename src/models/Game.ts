@@ -13,6 +13,7 @@ export class Game {
     numberOfRoundsToPlay: number = 3;
     carryOverPlayerName: string | null = null;
     carryOverTime: number | null = null;
+    customGame: boolean = false;
 
     createTeams(numberOfTeams: number): void {
         this.teams = [];

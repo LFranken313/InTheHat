@@ -4,62 +4,64 @@ import styled from 'styled-components/native';
 import StyledText from './StyledText';
 
 //region Styled components
-const ModalBackground = styled.View`
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.2);
-`;
+export const ModalBackground = styled.View({
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+});
 
-const ModalCard = styled.View`
-    background-color: ${({theme}) => theme.ModalCardBackground};
-    border-radius: 16px;
-    border-width: 2px;
-    border-color: ${({theme}) => theme.ModalCardBorder};
-    width: 90%;
-    max-height: 90%;
-    position: relative;
-    overflow: hidden;
-    flex-direction: column;
-    justify-content: space-between;
-`;
+export const ModalCard = styled.View(({ theme }) => ({
+    backgroundColor: theme.ModalCardBackground,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: theme.ModalCardBorder,
+    width: "90%",
+    maxHeight: "90%",
+    position: "relative",
+    overflow: "hidden",
+    flexDirection: "column",
+    justifyContent: "space-between",
+}));
 
-const ContentContainer = styled.View`
-    padding: 4%;
-    max-height: 90%;
-`;
+export const ContentContainer = styled.View({
+    padding: "4%",
+    maxHeight: "90%",
+});
 
-const ButtonRow = styled.View`
-    padding: 3%;
-    justify-content: center;
-    width: 50%;
-    align-self: center;
-`;
+export const ButtonRow = styled.View({
+    padding: "3%",
+    justifyContent: "center",
+    width: "50%",
+    alignSelf: "center",
+});
 
-const ActionButton = styled.TouchableOpacity`
-    background-color: ${({theme}) => theme.ModalButtonBackground};
-    padding: 12px 32px;
-    border-width: 2px;
-    border-color: ${({theme}) => theme.ModalButtonBorder};
-    margin-top: 0;
-`;
+export const ActionButton = styled.TouchableOpacity(({ theme }) => ({
+    backgroundColor: theme.ModalButtonBackground,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderWidth: 2,
+    borderColor: theme.ModalButtonBorder,
+    marginTop: 0,
+}));
 
-const ActionButtonText = styled(StyledText)`
-    color: ${({theme}) => theme.ModalButtonTextColor};
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-align: center;
-    width: 100%;
-`;
+export const ActionButtonText = styled(StyledText)(({ theme }) => ({
+    color: theme.ModalButtonTextColor,
+    fontSize: 18,
+    fontWeight: "600",
+    letterSpacing: 1,
+    textAlign: "center",
+    width: "100%",
+}));
 
-const SecondaryButton = styled(ActionButton)`
-    background-color: ${({theme}) => theme.ModalCancelButtonBackground};
-`;
+export const SecondaryButton = styled(ActionButton)(({ theme }) => ({
+    backgroundColor: theme.ModalCancelButtonBackground,
+}));
 
-const SecondaryButtonText = styled(ActionButtonText)`
-    color: ${({theme}) => theme.ModalCancelButtonTextColor};
-`;
+export const SecondaryButtonText = styled(ActionButtonText)(({ theme }) => ({
+    color: theme.ModalCancelButtonTextColor,
+}));
+
 //endregion
 
 type ModalButton = {

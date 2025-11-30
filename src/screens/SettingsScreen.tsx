@@ -9,18 +9,20 @@ import {View} from 'react-native';
 import SettingsSection from "../components/SettingsSection";
 import ModalComponent from "../components/ModalComponent";
 import GameRulesContent from "../components/GameRulesContent";
-import {translations} from "../translations";
+import {Language, translations} from "../translations";
 import {useLanguage} from "../logic/LanguageContext";
-import {Language} from "../translations";
+import {useNavigation} from "@react-navigation/native";
+import type {StackNavigationProp} from "@react-navigation/stack";
+import {RootStackParamList} from "../navigation/types";
 
 
 //region Styled components
-const Container = styled.View`
-    flex: 1;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-`;
+const Container = styled.View(() => ({
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+}));
 
 const StyledScrollView = styled.ScrollView.attrs(() => ({
     contentContainerStyle: {
@@ -29,107 +31,102 @@ const StyledScrollView = styled.ScrollView.attrs(() => ({
         justifyContent: 'center',
         width: '100%',
     }
-}))`
-    border-width: 2px;
-    border-color: ${({theme}) => theme.SetupModalBorder};
-    border-radius: 12px;
-    background-color: ${({theme}) => theme.SetupModalBackground};
-    /* iOS shadow */
-    shadow-color: ${({ theme }) => theme.black};
-    shadow-offset: 0px 4px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
+}))(({ theme }) => ({
+    borderWidth: 2,
+    borderColor: theme.SetupModalBorder,
+    borderRadius: 12,
+    backgroundColor: theme.SetupModalBackground,
+    shadowColor: theme.MainScreenButtonShadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 6,
+}));
 
-    /* Android shadow */
-    elevation: 6;
-`;
+const AddCategoriesButtonText = styled(StyledText)(({ theme }) => ({
+    color: theme.MainScreenButtonLabel,
+    fontSize: 22,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textAlign: 'center',
+    width: '100%',
+}));
 
-const AddCategoriesButtonText = styled(StyledText)`
-    color: ${({theme}) => theme.MainScreenButtonLabel};
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-align: center;
-    width: 100%;
-`;
+const StyledPicker = styled(Picker)(({ theme }) => ({
+    width: '100%',
+    color: theme.SetupModalText,
+    backgroundColor: theme.CategoryCardBorder,
+}));
 
-const StyledPicker = styled(Picker)`
-    width: 100%;
-    color: ${({theme}) => theme.SetupModalText};
-    background-color: ${({theme}) => theme.CategoryCardBorder};
-`;
+const PickerText = styled(StyledText)(({ theme }) => ({
+    fontSize: 22,
+    fontWeight: '600',
+    textAlign: 'center',
+    width: '100%',
+    marginBottom: 8,
+    color: theme.SetupModalText,
+}));
 
-const PickerText = styled(StyledText)`
-    font-size: 22px;
-    font-weight: 600;
-    text-align: center;
-    width: 100%;
-    margin-bottom: 8px;
-    color: ${({theme}) => theme.SetupModalText};
-`;
+const PickerWrapper = styled.View(({ theme }) => ({
+    width: '100%',
+    borderWidth: 2,
+    borderColor: theme.primaryButtonBorder,
+    backgroundColor: theme.SetupModalBackground,
+    marginBottom: 16,
+}));
 
-const PickerWrapper = styled.View`
-    width: 100%;
-    border-width: 2px;
-    border-color: ${({theme}) => theme.primaryButtonBorder};
-    background-color: ${({theme}) => theme.SetupModalBackground};
-    margin-bottom: 16px;
-`;
+const InfoButtonText = styled(StyledText)(({ theme }) => ({
+    color: theme.SetupModalText,
+    fontSize: 22,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textAlign: 'center',
+    width: '100%',
+}));
 
-const InfoButtonText = styled(StyledText)`
-    color: ${({theme}) => theme.SetupModalText};
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-align: center;
-    width: 100%;
-`;
+const AddCategoriesButton = styled.TouchableOpacity(({ theme }) => ({
+    width: '100%',
+    minHeight: 56,
+    backgroundColor: theme.MainScreenButtonBackGround,
+    borderColor: theme.MainScreenButtonBorder,
+    borderWidth: 2,
+    marginTop: 16,
+    marginBottom: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: theme.MainScreenButtonShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
+}));
 
-const AddCategoriesButton = styled.TouchableOpacity`
-    width: 100%;
-    min-height: 56px;
-    background-color: ${({theme}) => theme.MainScreenButtonBackGround};
-    border-color: ${({theme}) => theme.MainScreenButtonBorder};
-    border-width: 2px;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    align-items: center;
-    justify-content: center;
-    shadow-color: ${({theme}) => theme.MainScreenButtonShadow};
-    shadow-offset: 0px 2px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
-    elevation: 4;
-`;
+const InfoButton = styled.TouchableOpacity(({ theme }) => ({
+    backgroundColor: theme.SetupInfoButtonBackground,
+    paddingVertical: 8,
+    paddingHorizontal: 18,
+    minHeight: 56,
+    borderWidth: 2,
+    borderColor: theme.SetupInfoButtonBorder,
+    marginTop: 16,
+    marginBottom: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    width: '70%',
+    shadowColor: theme.MainScreenButtonShadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 6,
+}));
 
-const InfoButton = styled.TouchableOpacity`
-    background: ${({theme}) => theme.SetupInfoButtonBackground};
-    padding: 8px 18px;
-    min-height: 56px;
-    border-width: 2px;
-    border-color: ${({theme}) => theme.SetupInfoButtonBorder};
-    margin-top: 16px;
-    margin-bottom: 16px;
-    align-items: center;
-    justify-content: center;
-    align-self: center;
-    width: 70%;
-    /* iOS shadow */
-    shadow-color: ${({ theme }) => theme.black};
-    shadow-offset: 0px 4px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
-
-    /* Android shadow */
-    elevation: 6;
-`;
-
-const ThemeRow = styled.View`
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 16px;
-`;
+const ThemeRow = styled.View(() => ({
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 16,
+}));
 
 const themeQuadColors = {
     normal: ['#7c4a03', '#6fb8e6', '#f7c873', '#f5e9da'],
@@ -137,13 +134,13 @@ const themeQuadColors = {
     girly: ['#FF69B4', '#f898c9', '#FFD1DC', '#FFE4E1'],
 };
 
-const ThemeButton = styled.TouchableOpacity`
-    width: 64px;
-    height: 64px;
-    border-radius: 8px;
-    margin-horizontal: 8px;
-    position: relative;
-`;
+const ThemeButton = styled.TouchableOpacity<{ selected: boolean }>(() => ({
+    width: 64,
+    height: 64,
+    borderRadius: 8,
+    marginHorizontal: 8,
+    position: 'relative',
+}));
 //endregion
 
 type SettingsScreenProps = {
@@ -211,7 +208,8 @@ function QuadSolid({colors}: { colors: string[] }) {
     );
 }
 
-export default function SettingsScreen({themeMode, setThemeMode, navigation}: SettingsScreenProps) {
+export default function SettingsScreen({themeMode, setThemeMode}: SettingsScreenProps) {
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'CustomWordScreen'>>();
     const {font, setFont} = useFont();
     const [showInfo, setShowInfo] = useState(false);
     const { language, setLanguage } = useLanguage();
@@ -232,6 +230,11 @@ export default function SettingsScreen({themeMode, setThemeMode, navigation}: Se
         setLanguage(lang);
         await AsyncStorage.setItem('user_language', lang);
     };
+
+    const customWordScreen = () => {
+        console.log("customWordScreen");
+        navigation.navigate('CustomWordScreen');
+    }
 
     return (
         <ScreenContainer
@@ -299,7 +302,7 @@ export default function SettingsScreen({themeMode, setThemeMode, navigation}: Se
                     </SettingsSection>
                 </Container>
             </StyledScrollView>
-            <AddCategoriesButton onPress={() => console.log("No")}>
+            <AddCategoriesButton onPress={() => customWordScreen()}>
                 <AddCategoriesButtonText>Add Categories (Coming soon)</AddCategoriesButtonText>
             </AddCategoriesButton>
         </ScreenContainer>

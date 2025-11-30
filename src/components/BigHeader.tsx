@@ -1,24 +1,20 @@
 import React, {ReactNode} from 'react';
-import {Dimensions, View} from 'react-native';
+import {View} from 'react-native';
 import StyledBold from './StyledBold';
 import styled from 'styled-components/native';
 
 
 //region styled components
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const CONTAINER_WIDTH = SCREEN_WIDTH * 0.9;
-const BASE_FONT_SIZE = Math.min(SCREEN_WIDTH * 0.10, 82);
-const HEADER_MARGIN_TOP = Math.max(Dimensions.get('window').height * 0.02, 40);
-
-const HeaderContainer = styled.View`
-    width: ${CONTAINER_WIDTH}px;
-    align-self: center;
-    margin-top: ${HEADER_MARGIN_TOP}px;
-`;
+const HeaderContainer = styled.View(() => ({
+    width: '90%',
+    alignSelf: 'center',
+    marginTop: '2%',
+    minMarginTop: 40,
+}));
 
 const StyledBigHeader = styled(StyledBold)`
     color: ${({ theme }) => theme.BannerColor};
-    font-size: ${BASE_FONT_SIZE}px;
+    font-size: 82px;
     text-align: center;
     text-shadow-color: ${({ theme }) => theme.BannerColorShadow};
     text-shadow-offset: 2px 2px;
@@ -26,15 +22,15 @@ const StyledBigHeader = styled(StyledBold)`
     width: 100%;
 `;
 
-const Underline = styled.View`
-    position: absolute;
-    left: 25%;
-    width: 50%;
-    height: 4px;
-    background-color: ${({ theme }) => theme.BannerColor};
-    bottom: 0;
-    border-radius: 2px;
-`;
+const Underline = styled.View(({ theme }) => ({
+    position: 'absolute',
+    left: '25%',
+    width: '50%',
+    height: 4,
+    backgroundColor: theme.BannerColor,
+    bottom: 0,
+    borderRadius: 2,
+}));
 
 //endregion
 

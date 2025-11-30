@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import { Text } from 'react-native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {Text} from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import styled from 'styled-components/native';
@@ -9,84 +9,88 @@ import {translations} from "../translations";
 import {useLanguage} from "../logic/LanguageContext";
 import ModalComponent from "../components/ModalComponent";
 import GameRulesContent from "../components/GameRulesContent";
+import {RootStackParamList} from '../navigation/types';
+import type {StackNavigationProp} from '@react-navigation/stack';
 
 //region Styled components
 
-const ModalText = styled(StyledText)`
-    font-size: 22px;
-    color: ${({ theme }) => theme.MainScreenButtonLabel};
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-align: center;
-    width: 100%;
-`;
+const ModalText = styled(StyledText)(({ theme }) => ({
+    fontSize: 22,
+    color: theme.MainScreenButtonLabel,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textAlign: 'center',
+    width: '100%',
+}));
 
-const ContentWrapper = styled.View`
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-`;
+const ContentWrapper = styled.View(() => ({
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+}));
 
-const InfoButtonContainer = styled.View`
-    align-items: center;
-    margin-bottom: 24px;
-    width: 100%;
-`;
+const InfoButtonContainer = styled.View(() => ({
+    alignItems: 'center',
+    marginBottom: 24,
+    width: '100%',
+}));
 
-const InfoButton = styled.TouchableOpacity`
-    background: ${({theme}) => theme.SetupInfoButtonBackground};
-    padding: 8px 18px;
-    border-width: 1px;
-    border-color: ${({theme}) => theme.SetupInfoButtonBorder};
-    shadow-color: ${({theme}) => theme.SetupButtonShadowColor};
-    shadow-opacity: 0.15;
-    shadow-radius: 8px;
-    shadow-offset: 0px 4px;
-    elevation: 4;
-`;
+const InfoButton = styled.TouchableOpacity(({ theme }) => ({
+    backgroundColor: theme.SetupInfoButtonBackground,
+    paddingVertical: 8,
+    paddingHorizontal: 18,
+    borderWidth: 1,
+    borderColor: theme.SetupInfoButtonBorder,
+    shadowColor: theme.MainScreenButtonShadow,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+}));
 
-const InfoButtonText = styled(StyledText)`
-    color: ${({theme}) => theme.SetupInfoButtonText};
-    font-size: 16px;
-    font-weight: 600;
-`;
+const InfoButtonText = styled(StyledText)(({ theme }) => ({
+    color: theme.SetupInfoButtonText,
+    fontSize: 16,
+    fontWeight: '600',
+}));
 
-const RoundButtonRow = styled.View`
-    flex-direction: row;
-    justify-content: center;
-    margin-bottom: 16px;
-`;
+const RoundButtonRow = styled.View(() => ({
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 16,
+}));
 
-const RoundButton = styled.TouchableOpacity<{ selected: boolean }>`
-    background: ${({theme, selected}) => selected ? theme.BannerColor : theme.BannerColor};
-    border-width: 2px;
-    border-color: ${({theme}) => theme.SetupButtonBorder};
-    padding: 10px 18px;
-    margin: 0 8px;
-    border-radius: 8px;
-    opacity: ${({selected}) => selected ? 1 : 0.7};
-`;
+const RoundButton = styled.TouchableOpacity<{ selected: boolean }>(({ theme, selected }) => ({
+    backgroundColor: selected ? theme.BannerColor : theme.BannerColor,
+    borderWidth: 2,
+    borderColor: theme.SetupButtonBorder,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    marginHorizontal: 8,
+    borderRadius: 8,
+    opacity: selected ? 1 : 0.7,
+}));
 
-const RoundButtonText = styled(StyledText)<{ selected: boolean }>`
-    color: ${({theme, selected}) => selected ? theme.SetupButtonText : theme.SetupButtonText};
-    font-size: 18px;
-    font-weight: ${({selected}) => selected ? 'bold' : 'normal'};
-`;
+const RoundButtonText = styled(StyledText)<{ selected: boolean }>(({ theme, selected }) => ({
+    color: selected ? theme.SetupButtonText : theme.SetupButtonText,
+    fontSize: 18,
+    fontWeight: selected ? 'bold' : 'normal',
+}));
 
-const RoundButtonRowLabel = styled(StyledText)`
-    font-size: 18px;
-    margin-bottom: 8px;
-    text-align: center;
-    color: ${({theme}) => theme.SetupGridLabelColor};
-    font-weight: 600;
-`;
+const RoundButtonRowLabel = styled(StyledText)(({ theme }) => ({
+    fontSize: 18,
+    marginBottom: 8,
+    textAlign: 'center',
+    color: theme.SetupGridLabelColor,
+    fontWeight: '600',
+}));
 
 //endregion
 
 const SetupScreen = () => {
-    const navigation = useNavigation();
-    const route = useRoute();
-    const customGame = route.params?.customGame ?? true;
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const route = useRoute<RouteProp<RootStackParamList, 'Setup'>>();
+    const { customGame } = route.params;
     const [showInfo, setShowInfo] = useState(false);
     const [players, setPlayers] = useState<number>(4);
     const [teams, setTeams] = useState<number>(2);
@@ -120,24 +124,19 @@ const SetupScreen = () => {
         setWords(n * 5);
     };
 
-    // const handleInput = (setter: (n: number) => void) => (text: string) => {
-    //     const num = parseInt(text.replace(/[^0-9]/g, ''), 10);
-    //     setter(isNaN(num) ? 0 : num);
-    // };
-
     const handleCloseWarning = () => {
         setShowWarning(false);
     };
 
     const handleSubmit = () => {
         if (teams > 1 && players < teams * 2 && !hasShownPlayerWarning) {
-            setwarningText(" Warning: At least one team will have only 1 player. Consider adjusting the numbers for balanced teams.");
+            setwarningText(localizedText.playerWarning);
             setShowWarning(true);
             setHasShownPlayerWarning(true);
             return;
         }
         if (words / players < 4 && !hasShownWordWarning) {
-            setwarningText("Please choose at least 4 words per player for a better game experience.");
+            setwarningText(localizedText.wordWarning);
             setShowWarning(true);
             setHasShownWordWarning(true);
             return;

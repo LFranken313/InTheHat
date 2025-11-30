@@ -2,16 +2,16 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
 import {GameStateService} from '../logic/GameStateService';
 import {useNavigation} from '@react-navigation/native';
-import {useWindowDimensions, Image, Modal, View, Text, Button} from 'react-native'
+import {Image, Linking, TouchableOpacity, useWindowDimensions} from 'react-native'
 import ScreenContainer from '../components/ScreenContainer';
 import StyledBold from '../components/StyledBold';
 import StyledText from '../components/StyledText';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ModalComponent from "../components/ModalComponent";
 import {translations} from "../translations";
-import { useLanguage } from '../logic/LanguageContext';
-import { Linking, TouchableOpacity } from 'react-native';
-
+import {useLanguage} from '../logic/LanguageContext';
+import {RootStackParamList} from '../navigation/types';
+import type {StackNavigationProp} from '@react-navigation/stack';
 
 //region Styled components
 const Banner = styled(StyledBold)`
@@ -25,91 +25,74 @@ const Banner = styled(StyledBold)`
     margin-top: 8%;
 `;
 
-const ButtonLabel = styled(StyledText)`
-    font-size: 22px;
-    color: ${({ theme }) => theme.MainScreenButtonLabel};
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-align: center;
-    width: 100%;
-`;
+const ButtonLabel = styled(StyledText)(({ theme }) => ({
+    fontSize: 22,
+    color: theme.MainScreenButtonLabel,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textAlign: 'center',
+    width: '100%',
+}));
 
-const StyledButton = styled.TouchableOpacity`
-    background-color: ${({ theme }) => theme.MainScreenButtonBackGround};
-    border-color: ${({ theme }) => theme.MainScreenButtonBorder};
-    border-width: 2px;
-    margin-bottom: 16px;
-    align-items: center;
-    justify-content: center;
-    min-height: 56px;
-    width: 80%;
-    shadow-color: ${({ theme }) => theme.MainScreenButtonShadow};
-    shadow-offset: 0px 2px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
-    elevation: 4;
-`;
+const StyledButton = styled.TouchableOpacity(({ theme }) => ({
+    backgroundColor: theme.MainScreenButtonBackGround,
+    borderColor: theme.MainScreenButtonBorder,
+    borderWidth: 2,
+    marginBottom: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 56,
+    width: '80%',
+    shadowColor: theme.MainScreenButtonShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
+}));
 
-const ButtonRow = styled.View`
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: stretch;
-    width: 80%;
-    align-self: center;
-    margin-bottom: 16px;
-`;
+const ButtonRow = styled.View(() => ({
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    width: '80%',
+    alignSelf: 'center',
+    marginBottom: 16,
+}));
 
-const HalfButton = styled(StyledButton)`
-    width: 48%;
-    margin-bottom: 0;
-`;
+const HalfButton = styled(StyledButton)(() => ({
+    width: '48%',
+    marginBottom: 0,
+}));
 
-const ImageContainer = styled.View`
-    justify-content: flex-start;
-    align-items: center;
-    margin-top: 12px;
-`;
+const ImageContainer = styled.View(() => ({
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 12,
+}));
 
-const ButtonContainer = styled.View`
-    width: 100%;
-    align-items: center;
-    margin-top: auto;
-    padding-bottom: 10%;
-`;
-
-const CloseButton = styled.TouchableOpacity`
-    background: ${({theme}) => theme.SetupCloseButtonBackground};
-    padding: 10px 24px;
-    border-color: ${({theme}) => theme.SetupCloseButtonText};
-    border-width: 2px;
-    shadow-color: ${({theme}) => theme.SetupButtonShadowColor};
-    shadow-offset: 0px 4px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
-    elevation: 6;
-    align-self: center;
-    margin-top: 16px;
-`;
-
-const CloseButtonText = styled(StyledText)`
-    color: ${({theme}) => theme.SetupCloseButtonText};
-    font-size: 16px;
-`;
+const ButtonContainer = styled.View(() => ({
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 'auto',
+    paddingBottom: '10%',
+}));
 //endregion
 
 const StartScreen = () => {
     const [hasSavedGame, setHasSavedGame] = useState(false);
-    const navigation = useNavigation();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const { height}  = useWindowDimensions();
     const [showWelcomeModal, setShowWelcomeModal] = useState(false);
     const { language } = useLanguage();
     const localizedText = translations[language].startScreen;
+    let customGame = false;
 
     useEffect(() => {
         const checkSavedGame = async () => {
             const service = new GameStateService();
             const game = await service.loadGameState();
             setHasSavedGame(!!game);
+            customGame = game.customGame;
         };
         checkSavedGame();
     }, []);
@@ -130,8 +113,6 @@ const StartScreen = () => {
     const handleStartPress = (customGame: boolean) => {
         navigation.navigate('Setup', { customGame });
     };
-
-
 
     return (
         <ScreenContainer>
@@ -156,11 +137,11 @@ const StartScreen = () => {
                     </HalfButton>
                 </ButtonRow>
                 {hasSavedGame && (
-                    <StyledButton onPress={() => navigation.navigate('PlayerTurnScreen' as never)}>
+                    <StyledButton onPress={() => navigation.navigate('PlayerTurnScreen', {customGame})}>
                         <ButtonLabel>{localizedText.loadButton}</ButtonLabel>
                     </StyledButton>
                 )}
-                <StyledButton onPress={() => navigation.navigate('SettingsScreen' as never)}>
+                <StyledButton onPress={() => navigation.navigate('SettingsScreen')}>
                     <ButtonLabel>{localizedText.settingsButton}</ButtonLabel>
                 </StyledButton>
             </ButtonContainer>
@@ -186,5 +167,3 @@ const StartScreen = () => {
 };
 
 export default StartScreen;
-
-//TODO: If this is the first time playing show modal with welcome text

@@ -4,29 +4,30 @@ import StyledText from './StyledText';
 
 //region Styled components
 
-const Card = styled.TouchableOpacity<{ selected: boolean }>`
-    flex: 1;
-    margin: 8px;
-    padding: 18px 0;
-    background-color: ${({ theme, selected }) => selected ? theme.CategoryCardBorder : theme.CategoryCardBackground};
-    border-width: 2px;
-    border-color: ${({ theme, selected }) => selected ? theme.CategoryCardBackground : theme.CategoryCardBorder};
-    align-items: center;
-    shadow-color: ${({ theme }) => theme.black};
-    shadow-opacity: 0.15;
-    shadow-radius: 8px;
-    shadow-offset: 0px 4px;
-    elevation: 4;
-    min-width: 0;
-`;
+const Card = styled.TouchableOpacity<{ selected: boolean }>(({ theme, selected }) => ({
+    flex: 1,
+    margin: 8,
+    paddingVertical: 18,
+    paddingHorizontal: 0,
+    backgroundColor: selected ? theme.CategoryCardBorder : theme.CategoryCardBackground,
+    borderWidth: 2,
+    borderColor: selected ? theme.CategoryCardBackground : theme.CategoryCardBorder,
+    alignItems: 'center',
+    shadowColor: theme.MainScreenButtonShadow,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+    minWidth: 0,
+}));
 
-const CategoryText = styled(StyledText)<{ selected: boolean }>`
-    font-size: 18px;
-    color: ${({ theme, selected }) => selected ? theme.CategoryCardBackground : theme.CategoryCardText};
-    font-weight: 600;
-    text-align: center;
-    width: 100%;
-`;
+const CategoryText = styled(StyledText)<{ selected: boolean }>(({ theme, selected }) => ({
+    fontSize: 18,
+    color: selected ? theme.CategoryCardBackground : theme.CategoryCardText,
+    fontWeight: '600',
+    textAlign: 'center',
+    width: '100%',
+}));
 
 //endregion
 

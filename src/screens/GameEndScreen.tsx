@@ -1,81 +1,84 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import styled from 'styled-components/native';
+import styled, {useTheme} from 'styled-components/native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
-import { ScrollView } from 'react-native';
+import {ScrollView} from 'react-native';
 import {GameStateService} from '../logic/GameStateService';
 import {WordService} from '../logic/WordService';
 import {GameService} from "../logic/GameService";
 import {Game} from '../models/Game';
 import winningMessage from '../assets/WinningMessage.json'
-import { useTheme } from 'styled-components/native';
+import type {StackNavigationProp} from "@react-navigation/stack";
+import {RootStackParamList} from "../navigation/types";
+import {translations} from "../translations";
+import {useLanguage} from "../logic/LanguageContext";
 
 //region Styled components
-const primaryBlue = '#6fb8e6';
 const gold = '#FFD700';
 const silver = '#C0C0C0';
 const bronze = '#CD7F32';
 
-const TeamRow = styled.View`
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding: 0 24px;
-    width: 100%;
-`;
+const TeamRow = styled.View(() => ({
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 0,
+    width: '100%',
+}));
 
-const TeamName = styled(StyledText)<{ fontSize: number; color?: string }>`
-    color: ${({ color, theme }) => color || theme.TeamNameColor};
-    font-size: ${({fontSize}) => fontSize}px;
-    flex: 1;
-    flex-basis: 0;
-    flex-shrink: 1;
-    min-width: 0;
-    margin-right: 12px;
-`;
+const TeamName = styled(StyledText)<{ fontSize: number; color?: string }>(({ fontSize, color, theme }) => ({
+    color: color || theme.TeamNameColor,
+    fontSize: fontSize,
+    flex: 1,
+    flexBasis: 0,
+    flexShrink: 1,
+    minWidth: 0,
+    marginRight: 12,
+}));
 
-const TeamScore = styled(StyledText)<{ fontSize: number }>`
-    color: ${({ theme }) => theme.TeamScoreColor};
-    font-size: ${({fontSize}) => fontSize}px;
-    flex: none;
-    min-width: 0;
-    text-align: center;
-    font-weight: 600;
-    width: 15%;
-`;
+const TeamScore = styled(StyledText)<{ fontSize: number }>(({ fontSize, theme }) => ({
+    color: theme.TeamScoreColor,
+    fontSize: fontSize,
+    flex: 0,
+    minWidth: 0,
+    textAlign: 'center',
+    fontWeight: '600',
+    width: '15%',
+}));
 
-const SubBanner = styled(StyledText)<{ color?: string }>`
-    font-size: 36px;
-    text-align: center;
-    margin-top: 10%;
-    color: ${({ color, theme }) => color || theme.SubBannerColor};
-`;
+const SubBanner = styled(StyledText)<{ color?: string }>(({ color, theme }) => ({
+    fontSize: 36,
+    textAlign: 'center',
+    marginTop: '10%',
+    color: color || theme.SubBannerColor,
+}));
 
-const TeamsScroll = styled(ScrollView)`
-    max-height: 400px;
-    width: 100%;
-    border-width: 2px;
-    border-color: ${({ theme }) => theme.TeamsScrollBorder};
-    background: ${({ theme }) => theme.TeamsScrollBackground};
-    padding-vertical: 8px;
-    margin-top: 5%;
-`;
+const TeamsScroll = styled(ScrollView)(({ theme }) => ({
+    maxHeight: 400,
+    width: '100%',
+    borderWidth: 2,
+    borderColor: theme.TeamsScrollBorder,
+    backgroundColor: theme.TeamsScrollBackground,
+    paddingVertical: 8,
+    marginTop: '5%',
+}));
 //endregion
 
-
-//TODO: TRANSLATION NEEDED
 const gameStateService = new GameStateService();
 const wordService = new WordService();
 const gameService = new GameService(gameStateService, wordService);
 
 const GameEndScreen = () => {
-    const navigation = useNavigation<any>();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Start'>>();
     const [teams, setTeams] = useState<{ name: string; score: number }[]>([]);
     const [game, setGame] = useState<Game>(null);
     const [message, setMessage] = useState<string>('');
     const theme = useTheme();
+    const { language } = useLanguage();
+    const localizedText = translations[language].gameEndScreen;
 
     const shadowStyle = {
         textShadowColor: theme.TeamShadowColor,
@@ -124,9 +127,9 @@ const GameEndScreen = () => {
 
     return (
         <ScreenContainer
-            headerText="Game has ended!"
+            headerText={localizedText.title}
             showPrimaryButton
-            primaryButtonText="Back to Start"
+            primaryButtonText={localizedText.primaryButton}
             onPrimaryButtonPress={handleSubmit}
         >
             <SubBanner color={theme.primaryButtonBlue} style={{

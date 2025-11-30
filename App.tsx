@@ -20,7 +20,9 @@ import GameEndScreen from "./src/screens/GameEndScreen";
 import SubmitWordsScreen from "./src/screens/SubmitWordsScreen";
 import TeamOverviewScreen from "./src/screens/TeamOverviewScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
+import CustomWordScreen from "./src/screens/CustomWordScreen";
 import {darkTheme, girlyTheme, mainTheme} from "./src/theme";
+import {Language} from "./src/translations";
 
 const THEME_KEY = 'user_theme';
 const FONT_KEY = 'user_font';
@@ -34,12 +36,16 @@ export default function App() {
 
     const [themeMode, setThemeMode] = useState<'normal' | 'dark' | 'girly'>('normal');
     const [font, setFont] = useState<string | null>(null);
-    const [language, setLanguage] = useState('en');
+    const [language, setLanguage] = useState<Language>("en");
+    const allowedLanguages = ["en", "nl", "th"] as const;
 
     useEffect(() => {
         (async () => {
             const savedLang = await AsyncStorage.getItem(LANGUAGE_KEY);
-            if (savedLang) setLanguage(savedLang);
+
+            if (savedLang && allowedLanguages.includes(savedLang as any)) {
+                setLanguage(savedLang as typeof allowedLanguages[number]);
+            }
         })();
     }, []);
 
@@ -92,7 +98,11 @@ export default function App() {
             <FontProvider font={font} setFont={setFont}>
                 <LanguageContext.Provider value={{ language, setLanguage }}>
                     <NavigationContainer>
-                        <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Start">
+                        <Stack.Navigator
+                            id="root-stack"
+                            screenOptions={{ headerShown: false }}
+                            initialRouteName="Start"
+                        >
                             <Stack.Screen name="Start" component={StartScreen}/>
                             <Stack.Screen name="Setup" component={SetupScreen}/>
                             <Stack.Screen name="QuickGameScreen" component={QuickGameScreen}/>
@@ -103,6 +113,7 @@ export default function App() {
                             <Stack.Screen name="GameEndScreen" component={GameEndScreen}/>
                             <Stack.Screen name="SubmitWordsScreen" component={SubmitWordsScreen}/>
                             <Stack.Screen name="TeamOverviewScreen" component={TeamOverviewScreen}/>
+                            <Stack.Screen name="CustomWordScreen" component={CustomWordScreen}/>
                             <Stack.Screen
                                 name="SettingsScreen"
                                 children={props => (

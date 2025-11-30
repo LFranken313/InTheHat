@@ -1,18 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {EventArg, RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {GameStateService} from '../logic/GameStateService';
 import {GameService} from '../logic/GameService';
 import {WordService} from '../logic/WordService';
-
-import type {StackNavigationProp} from '@react-navigation/stack';
-import type { EventArg } from '@react-navigation/native';
-
 import styled from 'styled-components/native';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
 import StyledBold from '../components/StyledBold';
 import {useLanguage} from "../logic/LanguageContext";
 import {translations} from "../translations";
+import {RootStackParamList} from '../navigation/types';
+import type {StackNavigationProp} from '@react-navigation/stack';
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
@@ -33,17 +31,6 @@ const Centered = styled.View`
     flex: 1;
     justify-content: center;
     align-items: center;
-`;
-
-const TeamName = styled(StyledBold)`
-    color: ${({ theme }) => theme.PlayerTurnTeamNameColor};
-    font-size: 38px;
-    font-weight: 600;
-    text-align: center;
-    width: 100%;    margin-bottom: 16px;
-    text-shadow-color: ${({ theme }) => theme.TeamShadowColor};
-    text-shadow-offset: 1px 2px;
-    text-shadow-radius: 4px;
 `;
 
 const PlayerName = styled(StyledBold)`
@@ -70,34 +57,22 @@ const ReadyText = styled(StyledText)`
     width: 100%;
 `;
 
-const TimeLeftText = styled(StyledText)`
-    font-size: 20px;
-    color: ${({ theme }) => theme.PlayerTurnTimeLeftTextColor};
-    margin-bottom: 16px;
-    text-align: center;
-`;
-
 //endregion
 
-type RootStackParamList = {
-    PlayerTurnScreen: undefined;
-    GameScreen: { playerName: string | null, customGame: boolean };
-}
-
-
 const PlayerTurnScreen = () => {
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'GameScreen'>>();
     const [currentPlayerName, setCurrentPlayerName] = useState<string | null>(null);
     const [currentTeamName, setCurrentTeamName] = useState<string | null>(null);
     const [carryOverTime, setCarryOverTime] = useState<number | null>(null);
-    const route = useRoute();
-    const customGame = route.params as { customGame: boolean };
+    const route = useRoute<RouteProp<RootStackParamList, 'PlayerTurnScreen'>>();
+    const { customGame } = route.params;
     const [currentRound, setCurrentRound] = useState<number>();
     const { language } = useLanguage();
     const localizedText = translations[language].playerTurnScreen;
 
     useEffect(() => {
         return navigation.addListener('beforeRemove', (e: EventArg<'beforeRemove', false, any>) => {
+            //@ts-ignore
             e.preventDefault();
         });
     }, [navigation]);
@@ -127,7 +102,7 @@ const PlayerTurnScreen = () => {
     }, []);
 
     const handleGo = () => {
-        navigation.navigate('GameScreen', { playerName: currentPlayerName, customGame: customGame });
+        navigation.navigate('GameScreen', { playerName: currentPlayerName, customGame });
     };
 
     const getInstructions = () => {

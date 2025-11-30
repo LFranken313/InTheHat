@@ -1,147 +1,127 @@
 import React, {useState} from 'react';
 import {Dimensions} from 'react-native';
 import styled from 'styled-components/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {useLanguage} from "../logic/LanguageContext";
+import presetWords from '../assets/PresetWords.json';
+import {RootStackParamList} from "../navigation/types";
+import {translations} from "../translations";
+import ModalComponent from '../components/ModalComponent';
 import ScreenContainer from '../components/ScreenContainer';
 import StyledText from '../components/StyledText';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import presetWords from '../assets/PresetWords.json';
-import ModalComponent from '../components/ModalComponent';
-import {useLanguage} from "../logic/LanguageContext";
-import {translations} from "../translations";
 
 const screenWidth = Dimensions.get('window').width;
 const BUTTON_WIDTH = screenWidth * 0.38;
 
 //region Styled components
-const MainContent = styled.ScrollView`
-    margin-top: 32px;
-    width: 100%;
-    max-height: 78%;
-    flex-shrink: 0;
-`;
+const MainContent = styled.ScrollView(() => ({
+    marginTop: 32,
+    width: '100%',
+    maxHeight: '78%',
+    flexShrink: 0,
+}));
 
-const ModalText = styled(StyledText)`
-    font-size: 18px;
-    color: ${({theme}) => theme.ModalTextColor};
-    text-align: center;
-    font-weight: 600;
-    width: 100%;
-`;
+const ModalText = styled(StyledText)(({ theme }) => ({
+    fontSize: 18,
+    color: theme.ModalTextColor,
+    textAlign: 'center',
+    fontWeight: '600',
+    width: '100%',
+}));
 
-const Label = styled(StyledText)`
-    font-size: 20px;
-    color: ${({theme}) => theme.SubmitWordsLabelColor};
-    margin-bottom: 8px;
-    text-align: center;
-`;
+const Label = styled(StyledText)(({ theme }) => ({
+    fontSize: 20,
+    color: theme.SubmitWordsLabelColor,
+    marginBottom: 8,
+    textAlign: 'center',
+}));
 
-const WordInput = styled.TextInput`
-    height: 48px;
-    padding: 8px 12px;
-    background: ${({theme}) => theme.SubmitWordsInputBackground};
-    font-size: 20px;
-    border-width: 2px;
-    border-color: ${({theme}) => theme.SubmitWordsInputBorder};
-    margin-bottom: 12px;
-    text-align: center;
-    shadow-color: ${({theme}) => theme.SubmitWordsInputShadow};
-    shadow-offset: 0px 4px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
-    elevation: 6;
-    width: 60%;
-`;
+const WordInput = styled.TextInput(({ theme }) => ({
+    height: 48,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: theme.SubmitWordsInputBackground,
+    fontSize: 20,
+    borderWidth: 2,
+    borderColor: theme.SubmitWordsInputBorder,
+    marginBottom: 12,
+    textAlign: 'center',
+    shadowColor: theme.SubmitWordsInputShadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 6,
+    width: '60%',
+}));
 
-const AddButtonText = styled(StyledText)`
-    color: ${({theme}) => theme.SubmitWordsAddButtonText};
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-align: center;
-    width: 100%;
-`;
+const AddButtonText = styled(StyledText)(({ theme }) => ({
+    color: theme.SubmitWordsAddButtonText,
+    fontSize: 20,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textAlign: 'center',
+    width: '100%',
+}));
 
-const BottomBar = styled.View`
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    align-items: center;
-    padding-bottom: 24px;
-`;
+const BottomBar = styled.View(() => ({
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    alignItems: 'center',
+    paddingBottom: 24,
+}));
 
-const WordCountText = styled(StyledText)`
-    color: ${({theme}) => theme.SubmitWordsCountText};
-    margin-top: 12px;
-`;
+const WordCountText = styled(StyledText)(({ theme }) => ({
+    color: theme.SubmitWordsCountText,
+    marginTop: 12,
+}));
 
-const ActionButton = styled.TouchableOpacity`
-    background: ${({theme}) => theme.SubmitWordsActionButtonBackground};
-    padding: 14px 0;
-    align-items: center;
-    border-width: 2px;
-    border-color: ${({theme}) => theme.SubmitWordsActionButtonBorder};
-    width: ${BUTTON_WIDTH}px;
-    shadow-color: ${({theme}) => theme.SubmitWordsActionButtonShadow};
-    shadow-offset: 0px 4px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
-    elevation: 6;
-`;
+const ActionButton = styled.TouchableOpacity(({ theme }) => ({
+    backgroundColor: theme.SubmitWordsActionButtonBackground,
+    paddingVertical: 14,
+    paddingHorizontal: 0,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: theme.SubmitWordsActionButtonBorder,
+    width: BUTTON_WIDTH,
+    shadowColor: theme.SubmitWordsActionButtonShadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 6,
+}));
 
-const FillRandomButton = styled.TouchableOpacity`
-    background: ${({theme}) => theme.SubmitWordsFillRandomButtonBackground};
-    padding: 14px 0;
-    align-items: center;
-    border-width: 2px;
-    border-color: ${({theme}) => theme.SubmitWordsFillRandomButtonBorder};
-    width: ${BUTTON_WIDTH}px;
-    margin-top: 8px;
-    shadow-color: ${({theme}) => theme.SubmitWordsFillRandomButtonShadow};
-    shadow-offset: 0px 4px;
-    shadow-opacity: 0.25;
-    shadow-radius: 4px;
-    elevation: 6;
-`;
+const FillRandomButton = styled.TouchableOpacity(({ theme }) => ({
+    backgroundColor: theme.SubmitWordsFillRandomButtonBackground,
+    paddingVertical: 14,
+    paddingHorizontal: 0,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: theme.SubmitWordsFillRandomButtonBorder,
+    width: BUTTON_WIDTH,
+    marginTop: 8,
+    shadowColor: theme.SubmitWordsFillRandomButtonShadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 6,
+}));
 
-const FillRandomText = styled(StyledText)`
-    color: ${({theme}) => theme.SubmitWordsFillRandomText};
-    font-size: 20px;
-`;
+const FillRandomText = styled(StyledText)(({ theme }) => ({
+    color: theme.SubmitWordsFillRandomText,
+    fontSize: 20,
+}));
 //endregion
-
-type RootStackParamList = {
-    SubmitWordsScreen: {
-        words: number;
-        players: number;
-        teams: number;
-        rounds: number;
-    };
-    SubmitPlayerNamesScreen: {
-        words: number;
-        players: number;
-        teams: number;
-        rounds: number;
-        selectedCategories: string[];
-        customWords: string[];
-    };
-};
 
 const SubmitWordsScreen = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const route = useRoute();
+    const route = useRoute<RouteProp<RootStackParamList, 'SubmitWordsScreen'>>();
     const [showFillRandomModal, setShowFillRandomModal] = useState(false);
     const { language } = useLanguage();
     const localizedText = translations[language].submitWordsSreen;
-    const {words: requiredWords, players, teams, rounds, customGame } = route.params as {
-        words: number;
-        players: number;
-        teams: number;
-        rounds: number;
-        customGame: boolean;
-    };
-
+    const {words: requiredWords, players, teams, rounds, customGame } = route.params
     const [word, setWord] = useState('');
     const [hat, setHat] = useState<string[]>([]);
 

@@ -24,6 +24,7 @@ export class GameService {
     }
 
     async initializeGame(
+        customGame: boolean,
         playerNames: string[],
         numberOfTeams: number,
         numberOfRoundsToPlay: number,
@@ -31,6 +32,7 @@ export class GameService {
         chosenCategories?: string[],
         customWords?: string[]): Promise<Game> {
         this.game = await this.gameFactory.createGame(
+            customGame,
             playerNames,
             numberOfTeams,
             numberOfRoundsToPlay,

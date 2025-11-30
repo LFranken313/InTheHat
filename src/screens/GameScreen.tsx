@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useNavigation, useRoute, EventArg, RouteProp} from '@react-navigation/native';
+import {EventArg, RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {Image} from 'react-native';
 import styled from 'styled-components/native';
 import {GameStateService} from '../logic/GameStateService';
@@ -8,97 +8,103 @@ import {GameService} from '../logic/GameService';
 import StyledText from '../components/StyledText';
 import ScreenContainer from '../components/ScreenContainer';
 import GameTopBar from "../components/GameTopBar";
-import {StackNavigationProp} from "@react-navigation/stack";
 import {translations} from "../translations";
 import {useLanguage} from "../logic/LanguageContext";
 import ModalComponent from "../components/ModalComponent";
-
+import {RootStackParamList} from '../navigation/types';
+import type {StackNavigationProp} from '@react-navigation/stack';
 
 const gameStateService = new GameStateService();
 const wordService = new WordService();
 const gameService = new GameService(gameStateService, wordService);
 
 //region Styled components
-const Container = styled.View`
-    flex: 1;
-    background: ${({ theme }) => theme.GameScreenContainerBackground};
-    justify-content: center;
-    align-items: stretch;
-    padding: 32px 0 32px 0;
+export const Container = styled.View(({ theme }) => ({
+    flex: 1,
+    backgroundColor: theme.GameScreenContainerBackground,
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    paddingVertical: 32,
+    borderWidth: 2,
+    borderColor: theme.GameScreenContainerBorder,
+    borderRadius: 16,
+    marginTop: '3%',
+}));
 
-    border-width: 2px;
-    border-color: ${({ theme }) => theme.GameScreenContainerBorder};
-    border-radius: 16px;
-    margin-top: 3%;
-`;
+export const ModalText = styled(StyledText)(({ theme }) => ({
+    fontSize: 18,
+    color: theme.ModalTextColor,
+    textAlign: 'center',
+    fontWeight: '600',
+    width: '100%',
+}));
 
-const ModalText = styled(StyledText)`
-    font-size: 18px;
-    color: ${({theme}) => theme.ModalTextColor};
-    text-align: center;
-    font-weight: 600;
-    width: 100%;
-`;
+export const CardsLeftText = styled(StyledText)(({ theme }) => ({
+    color: theme.CardsLeftTextColor,
+    marginTop: 12,
+    textAlign: 'center',
+    fontWeight: '600',
+    width: '100%',
+}));
 
-const CardsLeftText = styled(StyledText)`
-    color: ${({ theme }) => theme.CardsLeftTextColor};
-    margin-top: 12px;
-    text-align: center;
-    font-weight: 600;
-    width: 100%;`;
+export const CurrentStreak = styled(StyledText)(({ theme }) => ({
+    fontSize: 30,
+    color: theme.CurrentStreakColor,
+    textAlign: 'center',
+    marginTop: 24,
+    marginBottom: 8,
+}));
 
-const CurrentStreak = styled(StyledText)`
-    font-size: 30px;
-    color: ${({ theme }) => theme.CurrentStreakColor};
-    text-align: center;
-    margin-top: 24px;
-    margin-bottom: 8px;
-`;
+// Card Image Container
+export const CardImageContainer = styled.View(() => ({
+    position: 'relative',
+    width: '100%',
+    height: 320,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 0,
+}));
 
-const CardImageContainer = styled.View`
-    position: relative;
-    width: 100%;
-    height: 320px;
-    align-items: center;
-    justify-content: center;
-    margin-horizontal: 0;
-`;
+export const CardImage = styled(Image)(() => ({
+    width: '100%',
+    height: '100%',
+    borderRadius: 16,
+}));
 
-const CardImage = styled(Image)`
-    width: 100%;
-    height: 100%;
-    border-radius: 16px;
-`;
+export const CardTextOverlay = styled.View(() => ({
+    position: 'absolute',
+    top: '10%',
+    left: '10%',
+    width: '80%',
+    height: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
 
-const CardTextOverlay = styled.View`
-    position: absolute;
-    top: 10%;
-    left: 10%;
-    width: 80%;
-    height: 80%;
-    align-items: center;
-    justify-content: center;
-`;
-const WordText = styled(StyledText)<{ fontSize: number }>`
-    max-width: 90%;
-    padding-horizontal: 12px;
-    text-align: center;
-    overflow: hidden;
-    font-size: ${({fontSize}) => fontSize}px;
-    color: ${({ theme }) => theme.WordTextColor};
-    letter-spacing: 2px;
-    font-weight: 600;
-    width: 100%;
-`;
+interface WordTextProps {
+    fontSize: number;
+}
 
-const HintText = styled(StyledText)`
-    font-size: 18px;
-    color: ${({ theme }) => theme.HintTextColor};
-    text-align: center;
-    margin-top: 32px;
-`;
+export const WordText = styled(StyledText)<WordTextProps>(({ fontSize, theme }) => ({
+    maxWidth: '90%',
+    paddingHorizontal: 12,
+    textAlign: 'center',
+    overflow: 'hidden',
+    fontSize: fontSize,
+    color: theme.WordTextColor,
+    letterSpacing: 2,
+    fontWeight: '600',
+    width: '100%',
+}));
 
-const buttonShadow = (theme) => ({
+export const HintText = styled(StyledText)(({ theme }) => ({
+    fontSize: 18,
+    color: theme.HintTextColor,
+    textAlign: 'center',
+    marginTop: 32,
+}));
+
+export const buttonShadow = (theme: any) => ({
     shadowColor: theme.MainScreenButtonShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -106,18 +112,18 @@ const buttonShadow = (theme) => ({
     elevation: 4,
 });
 
-const FullscreenOverlay = styled.TouchableOpacity`
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-`;
+export const FullscreenOverlay = styled.TouchableOpacity(() => ({
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+}));
 //endregion
 
 const GameScreen = () => {
     const [roundEnded, setRoundEnded] = useState(false);
-    const [timer, setTimer] = useState(60);
+    const [timer, setTimer] = useState(30);
     const [currentWord, setCurrentWord] = useState<string>('');
     const [streak, setStreak] = useState<number>(0);
     const [isTimeUp, setIsTimeUp] = useState(false);
@@ -127,23 +133,12 @@ const GameScreen = () => {
     const [carryOver, setCarryOver] = useState<{ player: string, time: number } | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const gameRef = useRef<any>(null);
-    const route = useRoute<RouteProp<{ params: GameScreenRouteParams }, 'params'>>();
-    const playerName = route.params?.playerName;
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const { language } = useLanguage();
+    const route = useRoute<RouteProp<RootStackParamList, 'GameScreen'>>();
+    const { playerName } = route.params;
+    const { customGame } = route.params;
     const localizedText = translations[language].gameScreen;
-
-
-    type GameScreenRouteParams = {
-        playerName: string;
-    };
-
-    type RootStackParamList = {
-        PlayerTurnScreen: undefined;
-        Start: undefined;
-        GameEndScreen: undefined;
-        RoundEndScreen: undefined;
-    };
 
     useEffect(() => {
         if (showExitModal && intervalRef.current) {
@@ -153,6 +148,7 @@ const GameScreen = () => {
 
     useEffect(() => {
         return navigation.addListener('beforeRemove', (e: EventArg<'beforeRemove', false, any>) => {
+            // @ts-ignore
             e.preventDefault();
         });
     }, [navigation]);
@@ -179,7 +175,7 @@ const GameScreen = () => {
         const loadGame = async () => {
             setStreak(0);
             setIsTimeUp(false);
-            let initialTimer = 60;
+            let initialTimer = 30;
             const loadedGame = await gameService.continueGame();
             gameRef.current = loadedGame;
             if (
@@ -234,7 +230,7 @@ const GameScreen = () => {
     };
 
     const onTimeUpPress = () => {
-        navigation.navigate('PlayerTurnScreen');
+        navigation.navigate('PlayerTurnScreen', { customGame });
     };
 
     const handleExit = () => {
@@ -268,7 +264,7 @@ const GameScreen = () => {
 
     const getWordDisplay = () => {
         if (isTimeUp) return localizedText.timeUp;
-        if (roundEnded) return localizedText.roundEnd;
+        if (roundEnded) return localizedText.roundEnded;
         if (showExitModal) return " ";
         return currentWord.toUpperCase();
     };
@@ -327,7 +323,7 @@ const GameScreen = () => {
             {roundEnded && !showExitModal && (
                 <FullscreenOverlay
                     activeOpacity={1}
-                    onPress={() => navigation.navigate('RoundEndScreen')}
+                    onPress={() => navigation.navigate('RoundEndScreen', { customGame })}
                 />
             )}
             <ModalComponent

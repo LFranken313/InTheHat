@@ -16,100 +16,108 @@ const gameStateService = new GameStateService();
 const wordService = new WordService();
 const gameService = new GameService(gameStateService, wordService);
 
+// region Styled components
 
-//region Styled components
-const Label = styled(StyledText)`
-    font-size: 20px;
-    color: ${({ theme }) => theme.SubmitLabelColor};
-    margin-bottom: 8px;
-    text-align: center;
-`;
+const Label = styled(StyledText)(({ theme }) => ({
+    fontSize: 20,
+    color: theme.SubmitLabelColor,
+    marginBottom: 8,
+    textAlign: 'center',
+}));
 
-const NameInput = styled.TextInput`
-    height: 48px;
-    padding: 8px 12px;
-    background: ${({ theme }) => theme.SubmitNameInputBackground};
-    font-size: 20px;
-    border-width: 2px;
-    border-color: ${({ theme }) => theme.SubmitNameInputBorder};
-    margin-bottom: 12px;
-    text-align: center;
-    shadow-color: ${({ theme }) => theme.SubmitNameInputShadow};
-    shadow-opacity: 0.15;
-    shadow-radius: 8px;
-    shadow-offset: 0px 4px;
-    elevation: 4;
-`;
+const NameInput = styled.TextInput(({ theme }) => ({
+    height: 48,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: theme.SubmitNameInputBackground,
+    fontSize: 20,
+    borderWidth: 2,
+    borderColor: theme.SubmitNameInputBorder,
+    marginBottom: 12,
+    textAlign: 'center',
 
-const ButtonRow = styled.View`
-    flex-direction: row;
-    width: 100%;
-    margin-bottom: 24px;
-    gap: 12px;
-`;
+    // shadow
+    shadowColor: theme.SubmitNameInputShadow,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+}));
+
+const ButtonRow = styled.View(() => ({
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 24,
+    gap: 12,
+}));
+
+const AddButton = styled.TouchableOpacity(({ theme }) => ({
+    backgroundColor: theme.SubmitAddButtonBackground,
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: theme.SubmitAddButtonBorder,
+    flex: 1,
+}));
+
+const RandomButton = styled.TouchableOpacity(({ theme }) => ({
+    backgroundColor: theme.SubmitRandomButtonBackground,
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: theme.SubmitRandomButtonBorder,
+    flex: 1,
+}));
+
+const AddButtonText = styled(StyledText)(({ theme }) => ({
+    color: theme.SubmitAddButtonText,
+    fontSize: 20,
+}));
+
+const RandomButtonText = styled(StyledText)(({ theme }) => ({
+    color: theme.SubmitRandomButtonText,
+    fontSize: 18,
+}));
+
+const NameItem = styled.View(({ theme }) => ({
+    backgroundColor: theme.SubmitNameItemBackground,
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    alignItems: 'center',
+
+    borderWidth: 2,
+    borderColor: theme.SubmitNameItemBorder,
+
+    // shadow
+    shadowColor: theme.SubmitNameItemShadow,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+}));
 
 const buttonShadow = {
-    shadowColor: undefined, // will be set in style prop using theme
+    shadowColor: undefined,
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 4,
 };
 
-const AddButton = styled.TouchableOpacity`
-    background: ${({ theme }) => theme.SubmitAddButtonBackground};
-    padding: 14px 0;
-    align-items: center;
-    border-width: 2px;
-    border-color: ${({ theme }) => theme.SubmitAddButtonBorder};
-    flex: 1;
-`;
+const NameText = styled(StyledText)(({ theme }) => ({
+    fontSize: 20,
+    color: theme.SubmitNameText,
+}));
 
-const RandomButton = styled.TouchableOpacity`
-    background: ${({ theme }) => theme.SubmitRandomButtonBackground};
-    padding: 14px 0;
-    align-items: center;
-    border-width: 2px;
-    border-color: ${({ theme }) => theme.SubmitRandomButtonBorder};
-    flex: 1;
-`;
+const NamesEnteredText = styled(StyledText)(({ theme }) => ({
+    color: theme.SubmitNamesEnteredText,
+    marginTop: 12,
+}));
 
-const AddButtonText = styled(StyledText)`
-    color: ${({ theme }) => theme.SubmitAddButtonText};
-    font-size: 20px;
-`;
+// endregion
 
-const RandomButtonText = styled(StyledText)`
-    color: ${({ theme }) => theme.SubmitRandomButtonText};
-    font-size: 18px;
-`;
-
-const NameItem = styled.View`
-    background: ${({ theme }) => theme.SubmitNameItemBackground};
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 8px;
-    align-items: center;
-    border-width: 2px;
-    border-color: ${({ theme }) => theme.SubmitNameItemBorder};
-    shadow-color: ${({ theme }) => theme.SubmitNameItemShadow};
-    shadow-opacity: 0.15;
-    shadow-radius: 8px;
-    shadow-offset: 0px 4px;
-    elevation: 4;
-`;
-
-const NameText = styled(StyledText)`
-    font-size: 20px;
-    color: ${({ theme }) => theme.SubmitNameText};
-`;
-
-const NamesEnteredText = styled(StyledText)`
-    color: ${({ theme }) => theme.SubmitNamesEnteredText};
-    margin-top: 12px;
-`;
-
-//endregion
 
 const SubmitPlayerNamesScreen = () => {
     const route = useRoute();
@@ -154,6 +162,7 @@ const SubmitPlayerNamesScreen = () => {
 
     const handleSubmit = async () => {
         const game = await gameService.initializeGame(
+            customGame,
             names,
             teams,
             rounds,

@@ -7,34 +7,36 @@ import {useLanguage} from "../logic/LanguageContext";
 import {translations} from "../translations";
 
 //region Styled components
-const Grid = styled.View`
-    margin-bottom: 32px;
-    align-items: center;
-`;
+export const Grid = styled.View(() => ({
+    marginBottom: 32,
+    alignItems: 'center',
+}));
 
-const GridCell = styled.View`
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 24px;
-`;
+export const GridCell = styled.View(() => ({
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+}));
 
-const GridLabel = styled(StyledText)`
-    font-size: 32px;
-    color: ${({theme}) => theme.SetupGridLabelColor};
-    width: 35%;
-    text-align: right;
-    margin-right: 12px;
-`;
+export const GridLabel = styled(StyledText)(({ theme }) => ({
+    fontSize: 32,
+    color: theme.SetupGridLabelColor,
+    width: '35%',
+    textAlign: 'right',
+    marginRight: 12,
+}));
 
-const ValueInput = styled(TextInput)`
-    font-size: 20px;
-    color: ${({theme}) => theme.SetupGridInputColor};
-    width: 70px;
-    text-align: left;
-    margin-left: 12px;
-    padding: 2px 6px;
-`;
+export const ValueInput = styled(TextInput)(({ theme }) => ({
+    fontSize: 20,
+    color: theme.SetupGridInputColor,
+    width: 70,
+    textAlign: 'left',
+    marginLeft: 12,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+}));
+
 //endregion
 
 interface SetupGridProps {

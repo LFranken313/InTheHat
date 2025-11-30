@@ -2,7 +2,7 @@ export const translations = {
     nl: {
         startScreen: {
             welcomeModal:
-                "Bedankt voor het downloaden van mijn spel. Als je het leuk vindt, geef dan een beoordeling in de app store. Het spel is nog in een vroege fase, dus alle feedback is welkom en kan gestuurd worden naar",
+                "Bedankt voor het downloaden van mijn spel. Als je het leuk vindt, geef dan een beoordeling in de app store. Het spel is nog in ontwikkeling, dus alle feedback is welkom en kan gestuurd worden naar",
             quickGame: "Snel spel",
             customGame: "Aangepast spel",
             loadButton: "Spel laden",
@@ -37,6 +37,8 @@ export const translations = {
             modalTitle: "Nieuw? Lees de regels",
             primaryButton: "Volgende: woorden",
             modalButton: "Veel plezier!",
+            playerWarning: "Waarschuwing: Ten minste één team heeft maar 1 speler. Overweeg het aantal spelers aan te passen voor gebalanceerde teams.",
+            wordWarning: "Kies minimaal 4 woorden per speler voor een betere spelervaring.",
         },
         settingsScreen: {
             title: "INSTELLINGEN",
@@ -108,9 +110,23 @@ export const translations = {
                 "van de ontbrekende woorden met willekeurige woorden aan?",
         },
         gameTopBar: {
-            exitButton: "Exit",
-            undoButton: "Draai terug",
+            exitButton: "Afsluiten",
+            undoButton: "Ongedaan maken",
         },
+        gameEndScreen: {
+            title: "Het spel is afgelopen!",
+            primaryButton: "Terug naar start",
+        },
+        roundEndScreen: {
+            titleOptional: "Ronde voorbij!",
+            titlePart1: "Ronde",
+            titlePart2: "voorbij!",
+            primaryButton: "Volgende ronde starten",
+        },
+        teamOverviewScreen: {
+            title: "Jouw teams",
+            primaryButton: "Volgende: Start spel",
+        }
     },
 
     en: {
@@ -151,6 +167,8 @@ export const translations = {
             modalTitle: "New? Read the rules",
             primaryButton: "Next: words",
             modalButton: "Have fun!",
+            playerWarning: "Warning: At least one team will have only 1 player. Consider adjusting the numbers for balanced teams.",
+            wordWarning: "Please choose at least 4 words per player for a better game experience."
         },
         settingsScreen: {
             title: "SETTINGS",
@@ -224,6 +242,20 @@ export const translations = {
             exitButton: "Exit",
             undoButton: "Undo",
         },
+        gameEndScreen: {
+            title: "Game has ended!",
+            primaryButton: "Back to Start",
+        },
+        roundEndScreen: {
+            titleOptional: 'Round Over!',
+            titlePart1: "Round",
+            titlePart2: "over!",
+            primaryButton: "Start Next Round",
+        },
+        teamOverviewScreen: {
+            title: "Your Teams",
+            primaryButton: "Next: Start Game",
+        }
     },
 
     th: {
@@ -237,12 +269,12 @@ export const translations = {
             modalButton: "ขอให้สนุก!",
         },
         rulesModal: {
-            rules: "In the Hat เล่นใน 3 รอบของเกมทายคำที่รวดเร็ว!",
+            rules: "In the Hat เป็นเกมที่เล่นกันใน 3 รอบของการทายคำสุดรวดเร็วและสนุกสนาน!",
             introduction:
                 "ผู้เล่นใส่คำหรือวลีลงในหมวกและผลัดกันหยิบคำออกมา แต่ละคนมีเวลา 30 วินาทีในการอธิบายหรือแสดงคำบนหน้าจอ คำที่ทายถูกจะได้ 1 คะแนน ทีมที่มีคะแนนมากที่สุดจะชนะ!",
             round1Title: "รอบที่ 1: ",
             round1Content:
-                "ห้ามพูดคำต้องห้าม - อธิบายคำบนการ์ดโดยไม่พูดคำนั้นเอง ห้ามโกง!",
+                "ห้ามพูดคำต้องห้าม - อธิบายคำบนการ์ดโดยไม่พูดคำนั้น ห้ามโกง",
             round2Title: "รอบที่ 2: ",
             round2Content:
                 "เมื่อคุณคุ้นเคยกับคำในหมวกแล้ว รอบนี้จะง่ายขึ้น! แสดงท่าทาง ห้ามพูด ใช้แค่ท่าทางเท่านั้น",
@@ -256,7 +288,7 @@ export const translations = {
         },
         setupScreen: {
             title: "ตั้งค่า",
-            presetLabel: "คการตั้งค่าคำอย่างไว",
+            presetLabel: "การตั้งค่าคำอย่างไว",
             playersLabel: "ผู้เล่น",
             teamsLabel: "ทีม",
             wordsLabel: "คำ",
@@ -264,6 +296,8 @@ export const translations = {
             modalTitle: "ใหม่? อ่านกติกา",
             primaryButton: "ถัดไป: คำ",
             modalButton: "ขอให้สนุก!",
+            playerWarning: "คำเตือน: อย่างน้อยหนึ่งทีมจะมีผู้เล่นเพียง 1 คน พิจารณาปรับจำนวนผู้เล่นเพื่อให้ทีมสมดุล",
+            wordWarning: "โปรดเลือกอย่างน้อย 4 คำต่อผู้เล่นเพื่อประสบการณ์การเล่นเกมที่ดียิ่งขึ้น"
         },
         settingsScreen: {
             title: "การตั้งค่า",
@@ -334,8 +368,22 @@ export const translations = {
             restOfTheWords: "เติมคำที่ขาดด้วยคำสุ่ม?",
         },
         gameTopBar: {
-            exitButton: "",
-            undoButton: "",
+            exitButton: "ออก",
+            undoButton: "ย้อนกลับ",
+        },
+        gameEndScreen: {
+            title: "เกมจบแล้ว!",
+            primaryButton: "กลับไปเริ่มต้น",
+        },
+        roundEndScreen: {
+            titleOptional: "จบรอบแล้ว!",
+            titlePart1: "รอบ",
+            titlePart2: "จบแล้ว!",
+            primaryButton: "เริ่มรอบต่อไป",
+        },
+        teamOverviewScreen: {
+            title: "ทีมของคุณ",
+            primaryButton: "ถัดไป: เริ่มเกม",
         }
     },
 } as const;

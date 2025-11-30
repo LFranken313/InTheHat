@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList} from 'react-native';
-import {useRoute} from '@react-navigation/native';
+import {ActivityIndicator} from 'react-native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import styled from 'styled-components/native';
 import {WordService} from '../logic/WordService';
-import {useNavigation} from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import {StackNavigationProp} from '@react-navigation/stack';
 import StyledText from '../components/StyledText';
 import GameOverview from '../components/GameOverview';
 import ScreenContainer from '../components/ScreenContainer';
@@ -12,97 +11,75 @@ import ListContainer from "../components/ListContainer";
 import CategoryCard from '../components/CategoryCard';
 import {useLanguage} from "../logic/LanguageContext";
 import {translations} from "../translations";
+import {RootStackParamList} from "../navigation/types";
 
 const wordService = new WordService();
 
 //region Styled components
-const Centered = styled.View`
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-    background-color: ${({ theme }) => theme.QuickGameScreenBackground};
-`;
+const Centered = styled.View(({ theme }) => ({
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.QuickGameScreenBackground,
+}));
 
-const Label = styled(StyledText)`
-    font-size: 20px;
-    margin-bottom: 8px;
-    color: ${({ theme }) => theme.QuickGameScreenLabelColor};
-    text-align: center;
-`;
+const Label = styled(StyledText)(({ theme }) => ({
+    fontSize: 20,
+    marginBottom: 8,
+    color: theme.QuickGameScreenLabelColor,
+    textAlign: 'center',
+}));
 
-const Subheader = styled(StyledText)`
-    font-size: 30px;
-    margin-top: 24px;
-    margin-bottom: 12px;
-    color: ${({ theme }) => theme.QuickGameScreenSubheaderColor};
-    text-align: center;
-`;
+const Subheader = styled(StyledText)(({ theme }) => ({
+    fontSize: 30,
+    marginTop: 24,
+    marginBottom: 12,
+    color: theme.QuickGameScreenSubheaderColor,
+    textAlign: 'center',
+}));
 
-const SelectAllButton = styled.TouchableOpacity<{ selected: boolean }>`
-    background-color: ${({ theme, selected }) =>
-            selected
-                    ? theme.QuickGameScreenSelectAllButtonSelectedBg
-                    : theme.QuickGameScreenSelectAllButtonUnselectedBg};
-    padding: 12px 24px;
-    border-width: 2px;
-    border-color: ${({ theme, selected }) =>
-            selected
-                    ? theme.QuickGameScreenSelectAllButtonSelectedBorder
-                    : theme.QuickGameScreenSelectAllButtonUnselectedBorder};
-    align-self: center;
-    margin-bottom: 12px;
-    shadow-color: ${({ theme }) => theme.QuickGameScreenSelectAllButtonShadow};
-    shadow-opacity: 0.15;
-    shadow-radius: 8px;
-    shadow-offset: 0px 4px;
-    elevation: 4;
-    min-width: 0;
-    width: 40%;
-`;
+const SelectAllButton = styled.TouchableOpacity<{ selected: boolean }>(({ theme, selected }) => ({
+    backgroundColor: selected
+        ? theme.QuickGameScreenSelectAllButtonSelectedBg
+        : theme.QuickGameScreenSelectAllButtonUnselectedBg,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderWidth: 2,
+    borderColor: selected
+        ? theme.QuickGameScreenSelectAllButtonSelectedBorder
+        : theme.QuickGameScreenSelectAllButtonUnselectedBorder,
+    alignSelf: 'center',
+    marginBottom: 12,
+    shadowColor: theme.QuickGameScreenSelectAllButtonShadow,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+    minWidth: 0,
+    width: '40%',
+}));
+
+const SelectAllText = styled(StyledText)<{ selected: boolean }>(({ theme, selected }) => ({
+    color: selected
+        ? theme.QuickGameScreenSelectAllTextSelected
+        : theme.QuickGameScreenSelectAllTextUnselected,
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    width: '100%',
+}));
 //endregion
 
-const SelectAllText = styled(StyledText)<{ selected: boolean }>`
-    color: ${({ theme, selected }) =>
-            selected
-                    ? theme.QuickGameScreenSelectAllTextSelected
-                    : theme.QuickGameScreenSelectAllTextUnselected};
-    font-size: 18px;
-    font-weight: 600;
-    text-align: center;
-    width: 100%;
-`;
-
-type QuickGameParamList = {
-    SubmitPlayerNames: {
-        players: number;
-        teams: number;
-        words: number;
-        rounds: number;
-        selectedCategories: string[];
-        customWords: string[];
-    };
-};
-
-type QuickGameScreenNavigationProp = StackNavigationProp<QuickGameParamList, 'SubmitPlayerNames'>;
-
 const QuickGameScreen = () => {
-    const route = useRoute();
-    const navigation = useNavigation<QuickGameScreenNavigationProp>();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'SubmitPlayerNamesScreen'>>();
     const [categories, setCategories] = useState<string[]>([]);
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const isValid = selected.size > 0;
     const [loading, setLoading] = useState(true);
     const { language } = useLanguage();
     const localizedText = translations[language].quickGameScreen;
-
-    const {players, teams, words, rounds, customGame} = route.params as {
-        players: number;
-        teams: number;
-        words: number;
-        rounds: number;
-        customGame: boolean;
-    };
-
+    const route = useRoute<RouteProp<RootStackParamList, 'QuickGameScreen'>>();
+    const { players, teams, words, rounds, customGame } = route.params;
 
     const handleSelectAll = () => {
         if (selected.size === categories.length) {

@@ -3,27 +3,28 @@ import styled from 'styled-components/native';
 import StyledBold from './StyledBold';
 
 //region Styled components
-const SectionContainer = styled.View`
-    width: 100%;
-    padding: 16px;
-    margin-bottom: 24px;
-`;
+export const SectionContainer = styled.View(() => ({
+    width: "100%",
+    padding: 16,
+    marginBottom: 24,
+}));
 
-const SectionHeader = styled(StyledBold)`
-    font-size: 20px;
-    margin-bottom: 12px;
-    text-align: left;
-    color: ${({theme}) => theme.SetupModalText};
-`;
+export const SectionHeader = styled(StyledBold)(({ theme }) => ({
+    fontSize: 20,
+    marginBottom: 12,
+    textAlign: "left",
+    color: theme.SetupModalText,
+}));
 
-const Underline = styled.View`
-    height: 2px;
-    width: 40%;
-    background-color: ${({ theme }) => theme.SetupModalBorder};
-    margin-vertical: 6px;
-    margin-left: 0;
-    align-self: flex-start;
-`;
+export const Underline = styled.View(({ theme }) => ({
+    height: 2,
+    width: "40%",
+    backgroundColor: theme.SetupModalBorder,
+    marginVertical: 6,
+    marginLeft: 0,
+    alignSelf: "flex-start",
+}));
+
 //endregion
 
 type SettingsSectionProps = {

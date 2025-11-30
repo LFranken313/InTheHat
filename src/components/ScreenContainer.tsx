@@ -6,23 +6,26 @@ import PrimaryButton from './PrimaryButton';
 
 
 //region Styled components
-const Outer = styled(SafeAreaView)`
-    background-color : ${({theme}) => theme.ScreenContainerBackground};
-    flex: 1;
-`;
 
-const Container = styled.View`
-    flex: 1;
-    flex-direction: column;
-`;
+export const Outer = styled(SafeAreaView)(({ theme }) => ({
+    backgroundColor: theme.ScreenContainerBackground,
+    flex: 1,
+}));
 
-const Content = styled.View`
-    flex: 1;
-    width: 92%;
-    align-self: center;
-    margin-bottom: 12px;
-`;
+export const Container = styled.View(() => ({
+    flex: 1,
+    flexDirection: "column",
+}));
+
+export const Content = styled.View(() => ({
+    flex: 1,
+    width: "92%",
+    alignSelf: "center",
+    marginBottom: 12,
+}));
+
 //endregion
+
 
 type ScreenContainerProps = {
     headerText?: string | null;
@@ -43,8 +46,6 @@ const ScreenContainer = ({
                              onPrimaryButtonPress,
                              primaryButtonDisabled = false,
                          }: ScreenContainerProps) => {
-    const insets = useSafeAreaInsets();
-
     return (
         <Outer edges={['bottom']}>
             <Container>
